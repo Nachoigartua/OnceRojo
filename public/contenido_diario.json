@@ -1,0 +1,23 @@
+{
+    "2025-04-30": {
+      "video": "Perez.mp4",
+      "respuestas": [
+        "La abre al lateral",
+        "Dispara al arco y va al saque de arco",
+        "Dispara al arco y es gol",
+        "Termina en gol en contra"
+      ],
+      "correcta": "Dispara al arco y va al saque de arco"
+    },
+    "2025-05-01": {
+      "video": "Caute.mp4",
+      "respuestas": [
+        "Le pega y es gol",
+        "La pasa atras y es gol",
+        "Se la quitan",
+        "Le pega y la manda a las nubes"
+      ],
+      "correcta": "a pasa atras y es gol"
+    }
+  }
+  

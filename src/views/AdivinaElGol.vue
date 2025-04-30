@@ -1,40 +1,41 @@
 <template>
-  <div class="adivina-el-gol-wrapper text-white text-center min-vh-100 d-flex flex-column align-items-center justify-content-start px-3" style="background: radial-gradient(circle, #e70013 30%, #a0000f 100%)">
-    <div class="boton-inicio">
-      <router-link to="/" class="btn-inicio">RojoFut25</router-link>
+  <div class="adivina-el-gol-wrapper d-flex min-vh-100 text-white position-relative" style="background-color: #e70013">
+    
+    <!-- BOTÓN DE INICIO ARRIBA A LA IZQUIERDA -->
+    <div class="boton-inicio position-absolute" style="top: 20px; left: 20px; z-index: 10;">
+      <router-link to="/" class="btn btn-light fw-bold">
+        RojoFut25
+      </router-link>
     </div>
-    <h2 class="mb-4">⚽ Adivina el Gol</h2>
-    <!-- Video MP4 -->
-    <div class="video-container mb-4">
+
+    <!-- VIDEO IZQUIERDA -->
+    <div class="video-container flex-grow-1 d-flex justify-content-center align-items-center p-4">
       <video
+        :src="`/videos/${videoSrc}`"
         ref="video"
         autoplay
-        class="video"
+        class="video rounded"
         @timeupdate="detenerVideo"
         @ended="finalizarVideo"
         @pause="evitarPausa"
+        controls
+        style="max-width: 100%; height: auto;"
       >
-        <source src="C:\Users\ignac\Videos\Perez.mp4" type="video/mp4" />
         Tu navegador no soporta videos.
       </video>
     </div>
-    <!-- Mensaje de sugerencia -->
-    <div v-if="mostrarSugerencia" class="scroll-suggestion">
-      <p>desplazate hacia abajo ⬇️</p>
-    </div>
-    <div v-if="contador > 0" class="contador">
-      <p>Tiempo restante: {{ contador }} segundos</p>
-    </div>
-    <div class="multiple-choice">
-      <p class="mb-4">¿Cómo terminó esta jugada?</p>
-      <div class="row">
+
+    <!-- RESPUESTAS DERECHA -->
+    <div class="respuestas-container p-4 d-flex flex-column justify-content-center align-items-center" style="width: 40%; background-color: #a0000f; border-top-left-radius: 1rem; border-bottom-left-radius: 1rem;">
+      <h4 class="mb-4 text-white text-center">¿Cómo terminó esta jugada?</h4>
+      <div class="w-100">
         <div
-          class="col-6"
+          class="mb-3"
           v-for="(respuesta, index) in respuestas"
           :key="index"
         >
           <button
-            class="custom-btn w-100 mb-3"
+            class="btn btn-light w-100"
             :class="{
               'btn-success': respuesta === respuestaSeleccionada && esCorrecta && videoFinalizado,
               'btn-danger': respuesta === respuestaSeleccionada && !esCorrecta && videoFinalizado
@@ -46,32 +47,44 @@
           </button>
         </div>
       </div>
-    </div>
-    <div v-if="resultado" class="resultado-modal">
-      <p>{{ resultado }}</p>
+
+      <div v-if="resultado" class="mt-4 text-white text-center">
+        <p>{{ resultado }}</p>
+      </div>
     </div>
   </div>
 </template>
 
+
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const video = ref(null)
 const contador = ref(0)
-const respuestas = [
-  'La abre al lateral',
-  'Dispara al arco y va al saque de arco',
-  'Dispara al arco y es gol',
-  'Termina en gol en contra'
-]
+const respuestas = ref([]) // ✅ Cambiado de const a ref
 const resultado = ref('')
 const respuestaSeleccionada = ref(null)
 const esCorrecta = ref(false)
 const videoFinalizado = ref(false)
 const respuestasHabilitadas = ref(false)
 const mostrarSugerencia = ref(false)
-const tiempoAgotado = ref(false) // 🆕 NUEVO estado para manejar el timeout
+const tiempoAgotado = ref(false) // ✅ Nueva bandera
 let intervalo = null
+const videoSrc = ref('')
+let correctaDelDia = ''
+
+onMounted(async () => {
+  const hoy = new Date().toISOString().slice(0, 10)
+  const data = await fetch('/contenido_diario.json').then(res => res.json())
+
+  if (data[hoy]) {
+    videoSrc.value = data[hoy].video
+    respuestas.value = data[hoy].respuestas // ✅ se puede asignar dinámicamente
+    correctaDelDia = data[hoy].correcta
+  } else {
+    resultado.value = '📅 No hay contenido cargado para hoy.'
+  }
+})
 
 const detenerVideo = () => {
   if (video.value.currentTime >= 9 && contador.value === 0) {
@@ -89,7 +102,7 @@ const iniciarContador = () => {
     contador.value--
     if (contador.value <= 0) {
       clearInterval(intervalo)
-      tiempoAgotado.value = true
+      tiempoAgotado.value = true // ✅ Marcamos que se agotó el tiempo
       respuestasHabilitadas.value = false
       resultado.value = '⏰ Debes seleccionar una respuesta para ver la jugada completa. Inténtalo nuevamente.'
       video.value.play()
@@ -98,14 +111,14 @@ const iniciarContador = () => {
 }
 
 const verificarRespuesta = (respuesta) => {
-  // Si el tiempo ya se agotó, no permitir responder
+  // ✅ Si el tiempo se agotó, no permitir responder
   if (tiempoAgotado.value) return
 
   clearInterval(intervalo)
   respuestaSeleccionada.value = respuesta
 
   setTimeout(() => {
-    if (respuesta === 'Dispara al arco y va al saque de arco') {
+    if (respuesta === correctaDelDia) {
       esCorrecta.value = true
       resultado.value = '¡Correcto!'
     } else {
@@ -125,8 +138,8 @@ const finalizarVideo = () => {
 }
 </script>
 
-
 <style scoped>
+/* (sin cambios en el style) */
 .adivina-el-gol-wrapper {
   padding: -4rem;
 }
@@ -135,7 +148,7 @@ const finalizarVideo = () => {
   max-width: 700px;
   width: 100%;
   aspect-ratio: 16 / 9;
-  margin-top: 0px; /* o 0 si quieres que esté completamente pegado arriba */
+  margin-top: 0px;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -177,6 +190,10 @@ const finalizarVideo = () => {
   justify-content: center;
   gap: 1rem;
 }
+.video {
+  width: 100%;
+  max-height: 80vh;
+}
 
 .col-6 {
   flex: 0 0 calc(50% - 1rem);
@@ -213,6 +230,7 @@ button.btn-danger {
   background-color: #dc3545 !important;
   color: white;
 }
+
 .boton-inicio {
   position: absolute;
   top: 1rem;
@@ -230,7 +248,6 @@ button.btn-danger {
 .btn-inicio:hover {
   color: #ffcccc;
 }
-
 
 .resultado-modal {
   position: absolute;
