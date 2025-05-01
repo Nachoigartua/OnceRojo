@@ -1,43 +1,35 @@
 <template>
-  <div class="adivina-el-gol-wrapper d-flex flex-wrap justify-content-center align-items-center min-vh-100 text-white position-relative w-100"
-     style="background-color: #e70013;">
-
-    
-    <!-- BOTÓN DE INICIO ARRIBA A LA IZQUIERDA -->
- 
-
-
-    <!-- VIDEO IZQUIERDA -->
-    <div class="video-container flex-grow-1 d-flex justify-content-center align-items-center p-4">
+  <div class="adivina-el-gol-wrapper text-white">
+    <!-- VIDEO -->
+    <div class="video-container">
       <video
         :src="`/videos/${videoSrc}`"
         ref="video"
         autoplay
-        class="video rounded"
+        class="video"
         @timeupdate="detenerVideo"
         @ended="finalizarVideo"
         @pause="evitarPausa"
-        
-        style="max-width: 100%; height: auto;"
+        @seeking="evitarAdelanto"
       >
         Tu navegador no soporta videos.
       </video>
     </div>
+    
 
-    <!-- RESPUESTAS DERECHA -->
-    <div class="respuestas-container p-4 d-flex flex-column justify-content-center align-items-center" style="width: 40%; background-color: #a0000f; border-top-left-radius: 1rem; border-bottom-left-radius: 1rem;">
-      <h4 class="mb-4 text-white text-center">¿Cómo terminó esta jugada?</h4>
-      <div class="w-100">
-        <div
-          class="mb-3"
-          v-for="(respuesta, index) in respuestas"
-          :key="index"
-        >
+    <!-- RESPUESTAS -->
+    <transition name="fade-slide">
+      <div
+        v-if="respuestas.length && !yaRespondio"
+        class="respuestas-container"
+      >
+        <h2 class="titulo">⚽ ¿Cómo terminó esta jugada?</h2>
+        <div v-for="(respuesta, index) in respuestas" :key="index">
           <button
-            class="btn btn-light w-100"
+            class="respuesta-btn"
             :class="{
-              'btn-success': respuesta === respuestaSeleccionada && esCorrecta && videoFinalizado,
-              'btn-danger': respuesta === respuestaSeleccionada && !esCorrecta && videoFinalizado
+              'correcta': respuesta === respuestaSeleccionada && esCorrecta && videoFinalizado,
+              'incorrecta': respuesta === respuestaSeleccionada && !esCorrecta && videoFinalizado
             }"
             :disabled="respuestaSeleccionada !== null || !respuestasHabilitadas"
             @click="verificarRespuesta(respuesta)"
@@ -46,14 +38,16 @@
           </button>
         </div>
       </div>
+    </transition>
 
-      <div v-if="resultado" class="mt-4 text-white text-center">
+    <!-- MENSAJE -->
+    <transition name="fade-pop">
+      <div v-if="resultado" class="resultado">
         <p>{{ resultado }}</p>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -68,37 +62,34 @@ const videoFinalizado = ref(false)
 const respuestasHabilitadas = ref(false)
 const mostrarSugerencia = ref(false)
 const tiempoAgotado = ref(false)
-
 const videoSrc = ref('')
 let correctaDelDia = ''
 
 const yaRespondio = ref(false)
 const tiempoRestante = ref('')
 
-// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
   const ahora = new Date()
   const proximaMedianoche = new Date(ahora)
   proximaMedianoche.setHours(24, 0, 0, 0)
   const diferencia = proximaMedianoche - ahora
-
   const horas = Math.floor(diferencia / (1000 * 60 * 60))
   const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60))
   tiempoRestante.value = `${horas}h ${minutos}m`
 }
 
-// Verifica si ya respondió hoy
 const verificarRespuestaGuardada = () => {
-  const hoy = new Date().toISOString().slice(0, 10)
+  const hoy = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }))
+    .toISOString()
+    .slice(0, 10)
   const respuestaGuardada = localStorage.getItem(`gol-respondido-${hoy}`)
   if (respuestaGuardada) {
     yaRespondio.value = true
     calcularTiempoRestante()
-    resultado.value = 'Ya respondiste hoy. Vuelve a intentarlo en ' + tiempoRestante.value
+    resultado.value = 'Ya respondiste hoy. Volvé a intentarlo en ' + tiempoRestante.value
   }
 }
 
-// Guarda en localStorage que respondió
 const guardarRespuesta = () => {
   const hoy = new Date().toISOString().slice(0, 10)
   localStorage.setItem(`gol-respondido-${hoy}`, 'respondido')
@@ -125,7 +116,6 @@ const detenerVideo = () => {
   if (video.value.currentTime >= 9 && contador.value === 0 && !yaRespondio.value) {
     video.value.pause()
     respuestasHabilitadas.value = true
-    mostrarSugerencia.value = true
     iniciarContador()
   }
 }
@@ -139,7 +129,7 @@ const iniciarContador = () => {
       clearInterval(intervalo)
       tiempoAgotado.value = true
       respuestasHabilitadas.value = false
-      resultado.value = '⏰ Debes seleccionar una respuesta para ver la jugada completa. Inténtalo nuevamente.'
+      resultado.value = '⏰ Se acabó el tiempo. Volvé a intentarlo mañana.'
       video.value.play()
     }
   }, 1000)
@@ -152,13 +142,8 @@ const verificarRespuesta = (respuesta) => {
   guardarRespuesta()
 
   setTimeout(() => {
-    if (respuesta === correctaDelDia) {
-      esCorrecta.value = true
-      resultado.value = '¡Correcto!'
-    } else {
-      esCorrecta.value = false
-      resultado.value = '¡Incorrecto! Intenta nuevamente.'
-    }
+    esCorrecta.value = respuesta === correctaDelDia
+    resultado.value = esCorrecta.value ? '✅ ¡Correcto!' : `❌ Incorrecto. Era: ${correctaDelDia}`
     videoFinalizado.value = true
   }, 3000)
 
@@ -172,136 +157,129 @@ const finalizarVideo = () => {
 }
 </script>
 
-
 <style scoped>
-/* (sin cambios en el style) */
 .adivina-el-gol-wrapper {
-  padding: -4rem;
+  display: flex;
+flex-direction: row;
+align-items: flex-start;
+justify-content: center;
+flex-wrap: wrap;
+gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #b30000, #1a0000);
+  min-height: 100vh;
+  padding: 2rem;
 }
 
 .video-container {
-  max-width: 700px;
+  max-width: 800px;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  margin-top: 0px;
-  border-radius: 10px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
 }
 
 .video {
   width: 100%;
-  height: auto;
-  border: none;
+  border-radius: 20px;
 }
 
-.scroll-suggestion {
-  margin-top: 1rem;
+.respuestas-container {
+  background: #1a0000;
+  border: 2px solid #ff4d4d;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  animation: pop-in 0.6s ease;
+}
+
+.titulo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.respuesta-btn {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: #ffffff;
+  color: #a00000;
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.respuesta-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(255, 0, 0, 0.3);
+}
+
+.respuesta-btn.correcta {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.respuesta-btn.incorrecta {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.resultado {
+  margin-top: 2rem;
   font-size: 1.2rem;
   font-weight: bold;
-  color: #ffffff;
-  animation: fadeInOut 2s infinite;
+  text-align: center;
+  background-color: rgba(0,0,0,0.6);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  animation: fade-pop 0.5s ease;
 }
 
-@keyframes fadeInOut {
-  0%, 100% {
+@keyframes pop-in {
+  0% {
+    transform: scale(0.95);
     opacity: 0;
   }
-  50% {
+  100% {
+    transform: scale(1);
     opacity: 1;
   }
 }
 
-.multiple-choice p {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  border: none;
+.fade-slide-enter-active {
+  animation: fade-slide-in 0.6s ease forwards;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-}
-.video {
-  width: 100%;
-  max-height: 80vh;
-}
-
-.col-6 {
-  flex: 0 0 calc(50% - 1rem);
+@keyframes fade-slide-in {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-button {
-  padding: 1rem 1.0rem;
-  font-size: 1.0rem;
-  font-weight: bold;
-  border-radius: 10px;
-  border: 2px solid white;
-  background-color: white;
-  color: black;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.fade-pop-enter-active {
+  animation: fade-pop 0.5s ease forwards;
 }
 
-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-button.btn-success {
-  background-color: #28a745 !important;
-  color: white;
-}
-
-button.btn-danger {
-  background-color: #dc3545 !important;
-  color: white;
-}
-
-.boton-inicio {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-}
-
-.btn-inicio {
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.btn-inicio:hover {
-  color: #ffcccc;
-}
-
-.resultado-modal {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translate(-50%, 0);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.contador {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
+@keyframes fade-pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

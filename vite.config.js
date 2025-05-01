@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  base: '/NOMBRE-DEL-REPO/', // reemplazá con el nombre real de tu repo
+  plugins: [vue()]
 })

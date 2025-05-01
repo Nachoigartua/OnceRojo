@@ -1,6 +1,6 @@
 <template>
-<div class="adivina-la-camiseta-wrapper d-flex flex-wrap justify-content-center align-items-center min-vh-100 text-white position-relative w-100"
-     style="background-color: #e70013;">
+  <div class="adivina-la-camiseta-wrapper d-flex flex-wrap justify-content-center align-items-center min-vh-100 text-white position-relative w-100"
+       style="background-color: #e70013;">
     <!-- IMAGEN IZQUIERDA -->
     <div class="imagen-container flex-grow-1 d-flex justify-content-center align-items-center p-4">
       <img
@@ -118,47 +118,89 @@ const verificarOpcion = (opcion) => {
 
 <style scoped>
 .adivina-la-camiseta-wrapper {
-  padding: -4rem;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #670000, #0a0000);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Bebas Neue', sans-serif;
+  color: #fff;
 }
 
 .imagen-container {
   max-width: 700px;
   width: 100%;
-  margin-top: 0px;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 8px;
+  border: 2px solid #a0000f;
+}
+
+.respuestas-container {
+  width: 100%;
+  padding: 2rem;
+  background-color: #ffffff; /* Cambiado a blanco */
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+}
+
+
+h4 {
+  font-size: 2rem;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
 }
 
 button {
-  padding: 1rem 1.0rem;
-  font-size: 1.0rem;
+  padding: 1rem;
+  font-size: 1rem;
   font-weight: bold;
   border-radius: 10px;
-  border: 2px solid white;
-  background-color: white;
-  color: black;
+  border: 2px solid #550000;
+  background-color: #ffffff; /* Cambiado a blanco */
+  color: #000; /* Cambiado a negro para contraste */
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 button.btn-success {
-  background-color: #28a745 !important;
+  background-color: #4caf50 !important;
   color: white;
 }
 
 button.btn-danger {
-  background-color: #dc3545 !important;
+  background-color: #ff4444 !important;
   color: white;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  color: #ffaaaa;
+  text-shadow: 0 0 5px red;
 }
 </style>
