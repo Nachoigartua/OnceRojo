@@ -3,7 +3,7 @@
     <!-- VIDEO -->
     <div class="video-container">
       <video
-        :src="`/videos/${videoSrc}`"
+        :src="videoSrc"
         ref="video"
         autoplay
         class="video"
@@ -15,7 +15,6 @@
         Tu navegador no soporta videos.
       </video>
     </div>
-    
 
     <!-- RESPUESTAS -->
     <transition name="fade-slide">
@@ -28,8 +27,8 @@
           <button
             class="respuesta-btn"
             :class="{
-              'correcta': respuesta === respuestaSeleccionada && esCorrecta && videoFinalizado,
-              'incorrecta': respuesta === respuestaSeleccionada && !esCorrecta && videoFinalizado
+              'correcta': yaRespondio && respuesta === correctaDelDia,
+              'incorrecta': yaRespondio && respuesta === respuestaSeleccionada && respuesta !== correctaDelDia
             }"
             :disabled="respuestaSeleccionada !== null || !respuestasHabilitadas"
             @click="verificarRespuesta(respuesta)"
@@ -50,111 +49,123 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
-const video = ref(null)
-const contador = ref(0)
-const respuestas = ref([])
-const resultado = ref('')
-const respuestaSeleccionada = ref(null)
-const esCorrecta = ref(false)
-const videoFinalizado = ref(false)
-const respuestasHabilitadas = ref(false)
-const mostrarSugerencia = ref(false)
-const tiempoAgotado = ref(false)
-const videoSrc = ref('')
-let correctaDelDia = ''
+const video = ref(null);
+const contador = ref(0);
+const respuestas = ref([]);
+const resultado = ref('');
+const respuestaSeleccionada = ref(null);
+const esCorrecta = ref(false);
+const videoFinalizado = ref(false);
+const respuestasHabilitadas = ref(false);
+const tiempoAgotado = ref(false);
+const videoSrc = ref('');
+let correctaDelDia = '';
 
-const yaRespondio = ref(false)
-const tiempoRestante = ref('')
+const yaRespondio = ref(false);
+const tiempoRestante = ref('');
 
+// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
-  const ahora = new Date()
-  const proximaMedianoche = new Date(ahora)
-  proximaMedianoche.setHours(24, 0, 0, 0)
-  const diferencia = proximaMedianoche - ahora
-  const horas = Math.floor(diferencia / (1000 * 60 * 60))
-  const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60))
-  tiempoRestante.value = `${horas}h ${minutos}m`
-}
+  const ahora = new Date();
+  const proximaMedianoche = new Date(ahora);
+  proximaMedianoche.setHours(24, 0, 0, 0);
+  const diferencia = proximaMedianoche - ahora;
+  const horas = Math.floor(diferencia / (1000 * 60 * 60));
+  const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+  tiempoRestante.value = `${horas}h ${minutos}m`;
+};
 
+// Función para verificar si el usuario ya respondió
 const verificarRespuestaGuardada = () => {
-  const hoy = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }))
-    .toISOString()
-    .slice(0, 10)
-  const respuestaGuardada = localStorage.getItem(`gol-respondido-${hoy}`)
+  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+  const respuestaGuardada = localStorage.getItem(`gol-respondido-${hoy}`);
+  const seleccionadaGuardada = localStorage.getItem(`gol-seleccionada-${hoy}`);
   if (respuestaGuardada) {
-    yaRespondio.value = true
-    calcularTiempoRestante()
-    resultado.value = 'Ya respondiste hoy. Volvé a intentarlo en ' + tiempoRestante.value
+    yaRespondio.value = true;
+    respuestaSeleccionada.value = seleccionadaGuardada;
+    calcularTiempoRestante();
+    resultado.value = 'Ya respondiste hoy. Volvé a intentarlo en ' + tiempoRestante.value;
   }
-}
+};
 
+// Función para guardar la respuesta en localStorage
 const guardarRespuesta = () => {
-  const hoy = new Date().toISOString().slice(0, 10)
-  localStorage.setItem(`gol-respondido-${hoy}`, 'respondido')
-  yaRespondio.value = true
-  calcularTiempoRestante()
-}
+  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+  localStorage.setItem(`gol-respondido-${hoy}`, 'respondido');
+  localStorage.setItem(`gol-seleccionada-${hoy}`, respuestaSeleccionada.value);
+  yaRespondio.value = true;
+  calcularTiempoRestante();
+};
 
+// Cargar datos del JSON al montar el componente
 onMounted(async () => {
-  const hoy = new Date().toISOString().slice(0, 10)
-  verificarRespuestaGuardada()
+  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+  verificarRespuestaGuardada(); // Verifica si ya respondió
 
-  const data = await fetch('/contenido_diario.json').then(res => res.json())
-
-  if (data[hoy]) {
-    videoSrc.value = data[hoy].video
-    respuestas.value = data[hoy].respuestas
-    correctaDelDia = data[hoy].correcta
-  } else {
-    resultado.value = '📅 No hay contenido cargado para hoy.'
+  try {
+    const data = await fetch(`${import.meta.env.BASE_URL}contenido_diario.json`).then((res) => res.json());
+    if (data[hoy]) {
+      videoSrc.value = `${import.meta.env.BASE_URL}videos/${data[hoy].video}`;
+      respuestas.value = data[hoy].respuestas;
+      correctaDelDia = data[hoy].correcta;
+    } else {
+      resultado.value = '📅 No hay contenido cargado para hoy.';
+    }
+  } catch (error) {
+    console.error('Error al cargar el archivo JSON:', error);
+    resultado.value = '❌ Error al cargar el contenido.';
   }
-})
+});
 
+// Detener el video en un momento específico
 const detenerVideo = () => {
   if (video.value.currentTime >= 9 && contador.value === 0 && !yaRespondio.value) {
-    video.value.pause()
-    respuestasHabilitadas.value = true
-    iniciarContador()
+    video.value.pause();
+    respuestasHabilitadas.value = true;
+    iniciarContador();
   }
-}
+};
 
+// Iniciar un contador de tiempo para responder
 const iniciarContador = () => {
-  contador.value = 15
-  tiempoAgotado.value = false
+  contador.value = 15;
+  tiempoAgotado.value = false;
   const intervalo = setInterval(() => {
-    contador.value--
+    contador.value--;
     if (contador.value <= 0) {
-      clearInterval(intervalo)
-      tiempoAgotado.value = true
-      respuestasHabilitadas.value = false
-      resultado.value = '⏰ Se acabó el tiempo. Volvé a intentarlo mañana.'
-      video.value.play()
+      clearInterval(intervalo);
+      tiempoAgotado.value = true;
+      respuestasHabilitadas.value = false;
+      resultado.value = '⏰ Se acabó el tiempo. Volvé a intentarlo mañana.';
+      video.value.play();
     }
-  }, 1000)
-}
+  }, 1000);
+};
 
+// Verificar la respuesta seleccionada
 const verificarRespuesta = (respuesta) => {
-  if (tiempoAgotado.value || yaRespondio.value) return
+  if (tiempoAgotado.value || yaRespondio.value) return;
 
-  respuestaSeleccionada.value = respuesta
-  guardarRespuesta()
-
-  setTimeout(() => {
-    esCorrecta.value = respuesta === correctaDelDia
-    resultado.value = esCorrecta.value ? '✅ ¡Correcto!' : `❌ Incorrecto. Era: ${correctaDelDia}`
-    videoFinalizado.value = true
-  }, 3000)
+  respuestaSeleccionada.value = respuesta;
+  guardarRespuesta();
 
   setTimeout(() => {
-    video.value.play()
-  }, 1000)
-}
+    esCorrecta.value = respuesta === correctaDelDia;
+    resultado.value = esCorrecta.value ? '✅ ¡Correcto!' : `❌ Incorrecto. Era: ${correctaDelDia}`;
+    videoFinalizado.value = true;
+  }, 3000);
 
+  setTimeout(() => {
+    video.value.play();
+  }, 1000);
+};
+
+// Finalizar el video
 const finalizarVideo = () => {
-  videoFinalizado.value = true
-}
+  videoFinalizado.value = true;
+};
 </script>
 
 <style scoped>
