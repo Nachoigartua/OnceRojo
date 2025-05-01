@@ -8,8 +8,7 @@
       <p class="fs-5">
         Tu respuesta fue 
         <span :class="{'text-success': esCorrecta, 'text-danger': !esCorrecta}">
-          {{ esCorrecta ? 'CORRECTA' : 'INCORRECTA' }}: {{ jugadorActual.value.nombre }}
-        </span>
+{{ esCorrecta ? 'CORRECTA' : 'INCORRECTA' }}: {{ jugadorActual?.nombre || 'Desconocido' }} {{ esCorrecta ? '(' + jugadorActual?.clubes.join(' ➡ ') + ')' : '' }}        </span>
       </p>
       <p class="fs-5">Ya respondiste hoy. Vuelve en:</p>
       <h3 class="reloj">{{ tiempoRestante }}</h3>
@@ -116,7 +115,7 @@ const guardarRespuesta = () => {
   const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
   localStorage.setItem(`jugador-jugado-${hoy}`, 'respondido');
   localStorage.setItem('respuesta-correcta', esCorrecta.value);
-  localStorage.setItem('respuesta-jugador', jugadorActual.value.nombre);
+  localStorage.setItem('respuesta-jugador', jugadorActual.value?.nombre || '');
   yaJugado.value = true;
   calcularTiempoRestante();
 };
@@ -125,6 +124,7 @@ const guardarRespuesta = () => {
 const cargarJugadorDelDia = async () => {
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}contenido_jugador_del_dia.json`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
     const hoy = new Date().toISOString().slice(0, 10);
@@ -150,7 +150,7 @@ const mostrarPista = () => {
     return;
   }
 
-  const clubes = jugadorActual.value.clubes;
+  const clubes = jugadorActual.value?.clubes || [];
 
   if (pistaIndex.value < clubes.length - 1) {
     pistaIndex.value++;
@@ -168,6 +168,11 @@ const mostrarPista = () => {
 const verificarRespuesta = () => {
   if (yaJugado.value) return;
 
+  if (!jugadorActual.value) {
+    resultado.value = '❌ Error: No se pudo cargar el jugador del día.';
+    return;
+  }
+
   if (respuesta.value === jugadorActual.value.nombre) {
     resultado.value = `🎉 ¡CORRECTO! Era ${jugadorActual.value.nombre}`;
     esCorrecta.value = true;
@@ -184,6 +189,7 @@ const verificarRespuesta = () => {
 const cargarJugadores = async () => {
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}contenido_jugador_del_dia.json`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     jugadores.value = data.jugadoresPorDia;
   } catch (error) {
@@ -227,7 +233,6 @@ onMounted(() => {
   cargarJugadores();
 });
 </script>
-
 
 <style scoped>
 .adivina-jugador-wrapper {
