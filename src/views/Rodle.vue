@@ -2,11 +2,13 @@
   <div class="rodle-container text-white text-center px-3">
     <h2 class="titulo-juego mb-4 animate-slide-in">🟥 Rodle 🟥</h2>
 
+    <!-- Mensaje de "Ya jugaste hoy" -->
     <div v-if="yaJugado">
       <p class="fs-5">Ya jugaste hoy. Volvé en:</p>
       <h3 class="reloj">{{ tiempoRestante }}</h3>
     </div>
 
+    <!-- Juego principal -->
     <div v-else-if="palabraDelDia">
       <p class="mb-3 fs-5">Adiviná el apellido del jugador 🔤</p>
 
@@ -34,6 +36,7 @@
       </div>
     </div>
 
+    <!-- Mensaje de "No hay Rodle cargado" -->
     <div v-else>
       <p class="text-warning">No hay Rodle cargado para hoy.</p>
     </div>
@@ -41,138 +44,146 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-const intentos = ref([]) // cada intento validado (con color)
-const palabraDelDia = ref('')
-const juegoTerminado = ref(false)
-const esCorrecto = ref(false)
-const yaJugado = ref(false)
-const tiempoRestante = ref('')
+const intentos = ref([]); // Cada intento validado (con color)
+const palabraDelDia = ref(''); // Palabra del día
+const juegoTerminado = ref(false); // Si el juego terminó
+const esCorrecto = ref(false); // Si la respuesta es correcta
+const yaJugado = ref(false); // Si ya jugó hoy
+const tiempoRestante = ref(''); // Tiempo restante para el próximo desafío
+const intentoActual = ref([]); // Letras del intento en curso
 
-const intentoActual = ref([]) // letras del intento en curso
-
+// Función para obtener la fecha clave (YYYY-MM-DD)
 const obtenerFechaClave = () => {
-  const ahora = new Date()
-  ahora.setUTCHours(3, 0, 0, 0)
-  return ahora.toISOString().slice(0, 10)
-}
+  const ahora = new Date();
+  ahora.setUTCHours(3, 0, 0, 0); // Ajuste para UTC-3
+  return ahora.toISOString().slice(0, 10);
+};
 
+// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
-  const ahora = new Date()
-  const mañana = new Date()
-  mañana.setUTCHours(27, 0, 0, 0)
-  const diff = mañana - ahora
+  const ahora = new Date();
+  const mañana = new Date();
+  mañana.setUTCHours(27, 0, 0, 0); // Mañana a las 00:00 (UTC-3)
+  const diff = mañana - ahora;
 
-  const horas = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, '0')
-  const minutos = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0')
-  const segundos = String(Math.floor((diff / 1000) % 60)).padStart(2, '0')
+  const horas = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+  const minutos = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+  const segundos = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
 
-  tiempoRestante.value = `${horas}:${minutos}:${segundos}`
-}
+  tiempoRestante.value = `${horas}:${minutos}:${segundos}`;
+};
 
+// Función para colorear un intento
 const colorearIntento = (intento, palabra) => {
-  const resultado = []
-  const usado = Array(palabra.length).fill(false)
+  const resultado = [];
+  const usado = Array(palabra.length).fill(false);
 
   for (let i = 0; i < palabra.length; i++) {
     if (intento[i] === palabra[i]) {
-      resultado.push({ char: intento[i], color: 'verde' })
-      usado[i] = true
+      resultado.push({ char: intento[i], color: 'verde' });
+      usado[i] = true;
     } else {
-      resultado.push(null)
+      resultado.push(null);
     }
   }
 
   for (let i = 0; i < palabra.length; i++) {
-    if (resultado[i]) continue
-    const index = palabra.split('').findIndex((c, j) => c === intento[i] && !usado[j])
+    if (resultado[i]) continue;
+    const index = palabra.split('').findIndex((c, j) => c === intento[i] && !usado[j]);
     if (index !== -1) {
-      resultado[i] = { char: intento[i], color: 'naranja' }
-      usado[index] = true
+      resultado[i] = { char: intento[i], color: 'naranja' };
+      usado[index] = true;
     } else {
-      resultado[i] = { char: intento[i], color: 'gris' }
+      resultado[i] = { char: intento[i], color: 'gris' };
     }
   }
 
-  return resultado
-}
+  return resultado;
+};
 
+// Función para intentar adivinar
 const intentarAdivinar = () => {
-  const intentoStr = intentoActual.value.join('').toLowerCase()
-  if (intentoStr.length !== palabraDelDia.value.length) return
+  const intentoStr = intentoActual.value.join('').toLowerCase();
+  if (intentoStr.length !== palabraDelDia.value.length) return;
 
-  const resultado = colorearIntento(intentoStr, palabraDelDia.value)
-  intentos.value.push(resultado)
+  const resultado = colorearIntento(intentoStr, palabraDelDia.value);
+  intentos.value.push(resultado);
 
   if (intentoStr === palabraDelDia.value) {
-    esCorrecto.value = true
-    juegoTerminado.value = true
-    localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true')
+    esCorrecto.value = true;
+    juegoTerminado.value = true;
+    localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true');
   } else if (intentos.value.length >= 5) {
-    juegoTerminado.value = true
-    localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true')
+    juegoTerminado.value = true;
+    localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true');
   }
 
-  intentoActual.value = []
-}
+  intentoActual.value = [];
+};
 
+// Función para manejar las teclas
 const handleKey = (e) => {
-  if (juegoTerminado.value) return
+  if (juegoTerminado.value) return;
 
-  const letra = e.key.toLowerCase()
+  const letra = e.key.toLowerCase();
   if (/^[a-zñáéíóúü]$/.test(letra) && intentoActual.value.length < palabraDelDia.value.length) {
-    intentoActual.value.push(letra.normalize("NFD").replace(/[\u0300-\u036f]/g, ''))
+    intentoActual.value.push(letra.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
   } else if (e.key === 'Backspace') {
-    intentoActual.value.pop()
+    intentoActual.value.pop();
   } else if (e.key === 'Enter') {
     if (intentoActual.value.length === palabraDelDia.value.length) {
-      intentarAdivinar()
+      intentarAdivinar();
     }
   }
-}
+};
 
+// Función para obtener el color de una letra
 const getColor = (fila, col) => {
   if (intentos.value[fila] && intentos.value[fila][col]) {
-    return intentos.value[fila][col].color
+    return intentos.value[fila][col].color;
   }
-  return ''
-}
+  return '';
+};
 
+// Función para obtener el carácter de una letra
 const getChar = (fila, col) => {
   if (intentos.value[fila]) {
-    return intentos.value[fila][col]?.char?.toUpperCase() || ''
+    return intentos.value[fila][col]?.char?.toUpperCase() || '';
   } else if (fila === intentos.value.length) {
-    return intentoActual.value[col]?.toUpperCase() || ''
+    return intentoActual.value[col]?.toUpperCase() || '';
   }
-  return ''
-}
+  return '';
+};
 
+// Cargar datos al montar el componente
 onMounted(async () => {
-  const clave = obtenerFechaClave()
-  yaJugado.value = localStorage.getItem('rodle-jugado-' + clave) === 'true'
+  const clave = obtenerFechaClave();
+  yaJugado.value = localStorage.getItem('rodle-jugado-' + clave) === 'true';
 
   if (yaJugado.value) {
-    calcularTiempoRestante()
-    setInterval(calcularTiempoRestante, 1000)
-  }
-
-  try {
-    const res = await fetch('/Rodle.json')
-    const data = await res.json()
-    if (data[clave]) {
-      palabraDelDia.value = data[clave].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '')
+    calcularTiempoRestante();
+    setInterval(calcularTiempoRestante, 1000);
+  } else {
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}Rodle.json`);
+      const data = await res.json();
+      if (data[clave]) {
+        palabraDelDia.value = data[clave].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+    } catch (error) {
+      console.error('Error cargando Rodle.json:', error);
     }
-  } catch (error) {
-    console.error('Error cargando Rodle.json:', error)
   }
 
-  window.addEventListener('keydown', handleKey)
-})
+  window.addEventListener('keydown', handleKey);
+});
 
+// Limpiar eventos al desmontar el componente
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKey)
-})
+  window.removeEventListener('keydown', handleKey);
+});
 </script>
 
 <style scoped>
