@@ -89,7 +89,7 @@ onMounted(async () => {
   const hoy = new Date().toISOString().slice(0, 10); // Obtiene la fecha actual en formato YYYY-MM-DD
   verificarRespuestaGuardada(); // Verifica si ya respondió
   try {
-    const data = await fetch('/camisetas_adivina.json').then((res) => res.json());
+    const data = await fetch('./camisetas_adivina.json').then((res) => res.json());
     if (data[hoy]) {
       imagenSrc.value = data[hoy].imagen;
       opciones.value = data[hoy].opciones;

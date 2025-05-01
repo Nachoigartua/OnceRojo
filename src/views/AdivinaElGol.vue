@@ -101,7 +101,7 @@ onMounted(async () => {
   const hoy = new Date().toISOString().slice(0, 10)
   verificarRespuestaGuardada()
 
-  const data = await fetch('/contenido_diario.json').then(res => res.json())
+  const data = await fetch('./contenido_diario.json').then(res => res.json())
 
   if (data[hoy]) {
     videoSrc.value = data[hoy].video

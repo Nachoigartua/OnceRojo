@@ -158,7 +158,7 @@ onMounted(async () => {
   }
 
   try {
-    const res = await fetch('/Rodle.json')
+    const res = await fetch('./Rodle.json')
     const data = await res.json()
     if (data[clave]) {
       palabraDelDia.value = data[clave].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, '')

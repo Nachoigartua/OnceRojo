@@ -91,7 +91,7 @@ onMounted(async () => {
     setInterval(calcularTiempoRestante, 1000)
   } else {
     try {
-      const res = await fetch('/adivina-intruso.json')
+      const res = await fetch('./adivina-intruso.json')
       const data = await res.json()
       const entradaHoy = data[clave]
       if (entradaHoy) {

@@ -218,7 +218,7 @@ const verificarRespuesta = () => {
 
 const cargarJugadores = async () => {
   try {
-    const response = await fetch('/contenido_jugador_del_dia.json');
+    const response = await fetch('./contenido_jugador_del_dia.json');
     const data = await response.json();
     jugadores.value = data.jugadoresPorDia;
   } catch (error) {
