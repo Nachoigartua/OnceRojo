@@ -9,10 +9,12 @@ const routes = [
   { path: '/adivina-camiseta', name: 'AdivinaCamiseta', component: () => import('../views/AdivinaCamiseta.vue') },
   { path: '/adivina-el-intruso', name: 'AdivinaElIntruso', component: () => import('../views/AdivinaElIntruso.vue') },
   { path: '/rodle', name: 'Rodle', component: () => import('../views/Rodle.vue') },
+  { path: '/preguntas-respuestas', name: 'PreguntasYRespuestas', component: () => import('../views/PreguntasRespuestas.vue') },
+  { path: '/venta-jugadores', name: 'VentaJugadores', component: () => import('../views/VentaJugadores.vue') }
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(), // Cambiado a hash mode
+  history: createWebHashHistory(), // Modo hash
   routes,
 });
 

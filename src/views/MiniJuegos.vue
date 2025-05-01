@@ -1,7 +1,7 @@
 <template>
   <div class="juegos-container text-white text-center px-3">
     <!-- Título principal -->
-    <h2 class="mb-5 titulo-juegos animate-slide-in">🔴 Elegí tu Minijuego 🔴 </h2>
+    <h2 class="mb-5 titulo-juegos animate-slide-in">🔴 Elegí tu Minijuego 🔴</h2>
 
     <!-- Tarjetas de minijuegos -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 w-100 justify-content-center animate-fade-in">
@@ -33,7 +33,15 @@ const juegos = [
   { titulo: 'Adiviná el Jugador por trayectoria', descripcion: 'Conocé ídolos y leyendas.' },
   { titulo: 'Adiviná el Intruso', descripcion: 'Descubrí quién nunca jugó en el Rojo.' },
   { titulo: 'Rodle', descripcion: 'Un Wordle rojo por día.' },
-  { titulo: 'Camisetas Legendarias', descripcion: '¿Cuál es cuál?' }
+  { titulo: 'Camisetas Legendarias', descripcion: '¿Cuál es cuál?' },
+  {
+    titulo: 'Trivia Roja',
+    descripcion: '⚡ Respondé en solo 10 segundos\n🎯 Preguntas infinitas sobre el Rey de Copas'
+  },
+  {
+    titulo: 'Top 10 Ventas',
+    descripcion: '💸 ¿Quién fue el más caro?\n📸 Con fotos e importes reales'
+  }
 ]
 
 const jugar = (titulo) => {
@@ -47,6 +55,10 @@ const jugar = (titulo) => {
     router.push('/adivina-el-intruso')
   } else if (titulo === 'Rodle') {
     router.push('/rodle')
+  } else if (titulo === 'Trivia Roja') {
+    router.push('/preguntas-respuestas')
+  } else if (titulo === 'Top 10 Ventas') {
+    router.push('/venta-jugadores')
   } else {
     alert(`El juego "${titulo}" aún no está disponible.`)
   }
@@ -75,7 +87,6 @@ const jugar = (titulo) => {
   animation: pulse-glow 2s infinite ease-in-out;
 }
 
-/* Tarjetas efecto cristal rojo */
 .tarjeta-juego-glow {
   background: rgba(255, 0, 0, 0.2);
   border-radius: 1.5rem;
@@ -89,7 +100,6 @@ const jugar = (titulo) => {
   box-shadow: 0 0 25px rgba(255, 100, 100, 0.6);
 }
 
-/* Botón */
 .boton-jugar {
   border-radius: 0.75rem;
   transition: all 0.25s ease;
@@ -101,7 +111,6 @@ const jugar = (titulo) => {
   transform: scale(1.05);
 }
 
-/* Animaciones */
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(-30px); }
   to { opacity: 1; transform: translateY(0); }
