@@ -20,17 +20,17 @@
           v-for="(opcion, index) in opciones"
           :key="index"
         >
-          <button
-            class="btn btn-light w-100"
-            :class="{
-              'btn-success': opcion === seleccionada && correcta,
-              'btn-danger': opcion === seleccionada && !correcta
-            }"
-            :disabled="seleccionada !== null || yaRespondio"
-            @click="verificarOpcion(opcion)"
-          >
-            {{ opcion }}
-          </button>
+      <button
+  class="btn btn-light w-100"
+  :class="{
+    'btn-success': yaRespondio && opcion === correctaDelDia, // Marca en verde la respuesta correcta solo si ya respondió
+    'btn-danger': yaRespondio && opcion === seleccionada && opcion !== correctaDelDia // Marca en rojo la respuesta incorrecta seleccionada
+  }"
+  :disabled="seleccionada !== null || yaRespondio"
+  @click="verificarOpcion(opcion)"
+>
+  {{ opcion }}
+</button>
         </div>
       </div>
 
@@ -68,10 +68,15 @@ const calcularTiempoRestante = () => {
 
 // Función para verificar si el usuario ya respondió
 const verificarRespuestaGuardada = () => {
-  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+  const hoy = new Date().toISOString().slice(0, 10).replace(/-/g, '_'); // Fecha actual en formato YYYY_MM_DD
   const respuestaGuardada = localStorage.getItem(`respuesta-${hoy}`);
+  const seleccionadaGuardada = localStorage.getItem(`seleccionada-${hoy}`);
+  const correctaGuardada = localStorage.getItem(`correcta-${hoy}`);
+
   if (respuestaGuardada) {
     yaRespondio.value = true;
+    seleccionada.value = seleccionadaGuardada;
+    correctaDelDia.value = correctaGuardada;
     calcularTiempoRestante();
     resultado.value = 'Ya has respondido hoy.';
   }
@@ -79,19 +84,22 @@ const verificarRespuestaGuardada = () => {
 
 // Función para guardar la respuesta en localStorage
 const guardarRespuesta = () => {
-  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+  const hoy = new Date().toISOString().slice(0, 10).replace(/-/g, '_'); // Fecha actual en formato YYYY_MM_DD
   localStorage.setItem(`respuesta-${hoy}`, 'respondido');
+  localStorage.setItem(`seleccionada-${hoy}`, seleccionada.value);
+  localStorage.setItem(`correcta-${hoy}`, correctaDelDia.value);
   yaRespondio.value = true;
   calcularTiempoRestante();
 };
 
 onMounted(async () => {
-  const hoy = new Date().toISOString().slice(0, 10); // Obtiene la fecha actual en formato YYYY-MM-DD
+  const hoy = new Date().toISOString().slice(0, 10).replace(/-/g, '_'); // Obtiene la fecha actual en formato YYYY_MM_DD
   verificarRespuestaGuardada(); // Verifica si ya respondió
   try {
-    const data = await fetch('/camisetas_adivina.json').then((res) => res.json());
+    const data = await fetch(`${import.meta.env.BASE_URL}camisetas_adivina.json`).then((res) => res.json());
     if (data[hoy]) {
-      imagenSrc.value = data[hoy].imagen;
+      // Ajustar la ruta de la imagen
+      imagenSrc.value = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${data[hoy].imagen}`;
       opciones.value = data[hoy].opciones;
       correctaDelDia.value = data[hoy].correcta;
     } else {
@@ -150,14 +158,13 @@ img {
 .respuestas-container {
   width: 100%;
   padding: 2rem;
-  background-color: #ffffff; /* Cambiado a blanco */
+  background-color: #ffffff;
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
 }
-
 
 h4 {
   font-size: 2rem;
@@ -171,8 +178,8 @@ button {
   font-weight: bold;
   border-radius: 10px;
   border: 2px solid #550000;
-  background-color: #ffffff; /* Cambiado a blanco */
-  color: #000; /* Cambiado a negro para contraste */
+  background-color: #ffffff;
+  color: #000;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
