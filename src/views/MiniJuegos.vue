@@ -2,7 +2,6 @@
   <div class="text-white text-center min-vh-100 d-flex flex-column align-items-center justify-content-center px-3" style="background: radial-gradient(circle, #e70013 30%, #a0000f 100%)">
     <!-- Botón en la parte superior izquierda -->
  
-
     <h2 class="mb-4">🕹️ Elegí tu Minijuego</h2>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 w-100 justify-content-center">
@@ -30,7 +29,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const juegos = [
-  { titulo: 'Adivina el gol', descripcion: '¿Como termino esta jugada?' },
+  { titulo: 'Adiviná el Gol', descripcion: '¿Cómo terminó esta jugada?' },
   { titulo: 'Adiviná el Jugador por trayectoria', descripcion: 'Conocé ídolos y leyendas.' },
   { titulo: 'Momentos Clave', descripcion: 'Identificá hitos inolvidables.' },
   { titulo: 'Orden Cronológico', descripcion: 'Ordená partidos y logros.' },
@@ -38,10 +37,12 @@ const juegos = [
 ]
 
 const jugar = (titulo) => {
-  if (titulo === 'Adivina el gol') {
+  if (titulo === 'Adiviná el Gol') {
     router.push('/adivina-el-gol')
   } else if (titulo === 'Adiviná el Jugador por trayectoria') {
-    router.push('/adivina-jugador-trayectoria') // ✅ Redirige a la ruta correcta
+    router.push('/adivina-jugador-trayectoria')
+  } else if (titulo === 'Camisetas Legendarias') {
+    router.push('/adivina-camiseta')
   } else {
     console.log(`El juego "${titulo}" aún no está disponible.`)
   }

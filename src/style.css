@@ -22,14 +22,33 @@ a:hover {
   color: #535bf2;
 }
 
-body {
+/* 🎯 Ajustes globales para centrado y layout consistente */
+html, body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+  width: 100%;
   min-height: 100vh;
+
+  /* Centramos #app siempre */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #e70013; /* Color de fondo global, lo podés cambiar o quitar */
 }
 
+/* 🧩 Estilo para el contenedor de la app */
+#app {
+  width: 100%;
+  max-width: 1200px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* Otros estilos que ya tenías */
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -56,13 +75,6 @@ button:focus-visible {
 
 .card {
   padding: 2em;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
 @media (prefers-color-scheme: light) {

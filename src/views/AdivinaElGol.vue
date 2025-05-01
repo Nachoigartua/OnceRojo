@@ -1,5 +1,7 @@
 <template>
-  <div class="adivina-el-gol-wrapper d-flex min-vh-100 text-white position-relative" style="background-color: #e70013">
+  <div class="adivina-el-gol-wrapper d-flex flex-wrap justify-content-center align-items-center min-vh-100 text-white position-relative w-100"
+     style="background-color: #e70013;">
+
     
     <!-- BOTÓN DE INICIO ARRIBA A LA IZQUIERDA -->
  
@@ -15,7 +17,7 @@
         @timeupdate="detenerVideo"
         @ended="finalizarVideo"
         @pause="evitarPausa"
-        controls
+        
         style="max-width: 100%; height: auto;"
       >
         Tu navegador no soporta videos.
@@ -58,25 +60,61 @@ import { ref, onMounted } from 'vue'
 
 const video = ref(null)
 const contador = ref(0)
-const respuestas = ref([]) // ✅ Cambiado de const a ref
+const respuestas = ref([])
 const resultado = ref('')
 const respuestaSeleccionada = ref(null)
 const esCorrecta = ref(false)
 const videoFinalizado = ref(false)
 const respuestasHabilitadas = ref(false)
 const mostrarSugerencia = ref(false)
-const tiempoAgotado = ref(false) // ✅ Nueva bandera
-let intervalo = null
+const tiempoAgotado = ref(false)
+
 const videoSrc = ref('')
 let correctaDelDia = ''
 
+const yaRespondio = ref(false)
+const tiempoRestante = ref('')
+
+// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
+const calcularTiempoRestante = () => {
+  const ahora = new Date()
+  const proximaMedianoche = new Date(ahora)
+  proximaMedianoche.setHours(24, 0, 0, 0)
+  const diferencia = proximaMedianoche - ahora
+
+  const horas = Math.floor(diferencia / (1000 * 60 * 60))
+  const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60))
+  tiempoRestante.value = `${horas}h ${minutos}m`
+}
+
+// Verifica si ya respondió hoy
+const verificarRespuestaGuardada = () => {
+  const hoy = new Date().toISOString().slice(0, 10)
+  const respuestaGuardada = localStorage.getItem(`gol-respondido-${hoy}`)
+  if (respuestaGuardada) {
+    yaRespondio.value = true
+    calcularTiempoRestante()
+    resultado.value = 'Ya respondiste hoy. Vuelve a intentarlo en ' + tiempoRestante.value
+  }
+}
+
+// Guarda en localStorage que respondió
+const guardarRespuesta = () => {
+  const hoy = new Date().toISOString().slice(0, 10)
+  localStorage.setItem(`gol-respondido-${hoy}`, 'respondido')
+  yaRespondio.value = true
+  calcularTiempoRestante()
+}
+
 onMounted(async () => {
   const hoy = new Date().toISOString().slice(0, 10)
+  verificarRespuestaGuardada()
+
   const data = await fetch('/contenido_diario.json').then(res => res.json())
 
   if (data[hoy]) {
     videoSrc.value = data[hoy].video
-    respuestas.value = data[hoy].respuestas // ✅ se puede asignar dinámicamente
+    respuestas.value = data[hoy].respuestas
     correctaDelDia = data[hoy].correcta
   } else {
     resultado.value = '📅 No hay contenido cargado para hoy.'
@@ -84,7 +122,7 @@ onMounted(async () => {
 })
 
 const detenerVideo = () => {
-  if (video.value.currentTime >= 9 && contador.value === 0) {
+  if (video.value.currentTime >= 9 && contador.value === 0 && !yaRespondio.value) {
     video.value.pause()
     respuestasHabilitadas.value = true
     mostrarSugerencia.value = true
@@ -95,11 +133,11 @@ const detenerVideo = () => {
 const iniciarContador = () => {
   contador.value = 15
   tiempoAgotado.value = false
-  intervalo = setInterval(() => {
+  const intervalo = setInterval(() => {
     contador.value--
     if (contador.value <= 0) {
       clearInterval(intervalo)
-      tiempoAgotado.value = true // ✅ Marcamos que se agotó el tiempo
+      tiempoAgotado.value = true
       respuestasHabilitadas.value = false
       resultado.value = '⏰ Debes seleccionar una respuesta para ver la jugada completa. Inténtalo nuevamente.'
       video.value.play()
@@ -108,11 +146,10 @@ const iniciarContador = () => {
 }
 
 const verificarRespuesta = (respuesta) => {
-  // ✅ Si el tiempo se agotó, no permitir responder
-  if (tiempoAgotado.value) return
+  if (tiempoAgotado.value || yaRespondio.value) return
 
-  clearInterval(intervalo)
   respuestaSeleccionada.value = respuesta
+  guardarRespuesta()
 
   setTimeout(() => {
     if (respuesta === correctaDelDia) {
@@ -134,6 +171,7 @@ const finalizarVideo = () => {
   videoFinalizado.value = true
 }
 </script>
+
 
 <style scoped>
 /* (sin cambios en el style) */

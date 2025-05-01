@@ -1,0 +1,112 @@
+{
+  "2025-05-01": {
+    "imagen": "/Camisetas/2009-09 local.jpg",
+    "opciones": ["2003-04 local", "2004-05 local", "2006-07 local", "2006-07 visitante", "2010-11 local", "2009-09 local"],
+    "correcta": "2009-09 local"
+  },
+  "2025-05-02": {
+    "imagen": "/Camisetas/2006-07 local.jpg",
+    "opciones": ["2013-14 local", "2003-04 local", "2006-07 local", "2010-11 local", "2006-07 visitante", "2004-05 local"],
+    "correcta": "2006-07 local"
+  },
+  "2025-05-03": {
+    "imagen": "/Camisetas/2006-07 visitante.jpg",
+    "opciones": ["2013-14 local", "2010-11 local", "2006-07 visitante", "2004-05 local", "2003-04 local", "2014-15 local"],
+    "correcta": "2006-07 visitante"
+  },
+  "2025-05-04": {
+    "imagen": "/Camisetas/2004-05 local.jpg",
+    "opciones": ["2015-16 local", "2010-11 local", "2014-15 local", "2003-04 local", "2004-05 local", "2013-14 local"],
+    "correcta": "2004-05 local"
+  },
+  "2025-05-05": {
+    "imagen": "/Camisetas/2003-04 local.jpg",
+    "opciones": ["2013-14 local", "2014-15 local", "2015-16 local", "2010-11 local", "2016-17 local", "2003-04 local"],
+    "correcta": "2003-04 local"
+  },
+  "2025-05-06": {
+    "imagen": "/Camisetas/2010-11 local.jpg",
+    "opciones": ["2017-18 local", "2013-14 local", "2010-11 local", "2016-17 local", "2015-16 local", "2014-15 local"],
+    "correcta": "2010-11 local"
+  },
+  "2025-05-07": {
+    "imagen": "/Camisetas/2013-14 local.jpg",
+    "opciones": ["2015-16 local", "2016-17 local", "2018-19 local", "2013-14 local", "2017-18 local", "2014-15 local"],
+    "correcta": "2013-14 local"
+  },
+  "2025-05-08": {
+    "imagen": "/Camisetas/2014-15 local.jpg",
+    "opciones": ["2014-15 local", "2017-18 local", "2018-19 local", "2019-20 local", "2016-17 local", "2015-16 local"],
+    "correcta": "2014-15 local"
+  },
+  "2025-05-09": {
+    "imagen": "/Camisetas/2015-16 local.jpg",
+    "opciones": ["2018-19 local", "2017-18 local", "2015-16 local", "2016-17 local", "2021 local", "2019-20 local"],
+    "correcta": "2015-16 local"
+  },
+  "2025-05-10": {
+    "imagen": "/Camisetas/2016-17 local.jpg",
+    "opciones": ["2018-19 local", "2021 local", "2017-18 local", "2022 visitante", "2019-20 local", "2016-17 local"],
+    "correcta": "2016-17 local"
+  },
+  "2025-05-11": {
+    "imagen": "/Camisetas/2017-18 local.jpg",
+    "opciones": ["2022 visitante", "2017-18 local", "2023 visitante", "2021 local", "2018-19 local", "2019-20 local"],
+    "correcta": "2017-18 local"
+  },
+  "2025-05-12": {
+    "imagen": "/Camisetas/2018-19 local.jpg",
+    "opciones": ["2024 arquero", "2022 visitante", "2018-19 local", "2021 local", "2019-20 local", "2023 visitante"],
+    "correcta": "2018-19 local"
+  },
+  "2025-05-13": {
+    "imagen": "/Camisetas/2019-20 local.jpg",
+    "opciones": ["2021 local", "2022 visitante", "2024 arquero", "2025 local", "2019-20 local", "2023 visitante"],
+    "correcta": "2019-20 local"
+  },
+  "2025-05-14": {
+    "imagen": "/Camisetas/2021 local.jpg",
+    "opciones": ["2022 visitante", "2023 visitante", "2024 arquero", "2021 local", "1997-98 local", "2025 local"],
+    "correcta": "2021 local"
+  },
+  "2025-05-15": {
+    "imagen": "/Camisetas/2022 visitante.jpg",
+    "opciones": ["1997-98 local", "1984-85 local", "2023 visitante", "2024 arquero", "2022 visitante", "2025 local"],
+    "correcta": "2022 visitante"
+  },
+  "2025-05-16": {
+    "imagen": "/Camisetas/2023 visitante.jpg",
+    "opciones": ["1926", "1984-85 local", "2025 local", "1997-98 local", "2023 visitante", "2024 arquero"],
+    "correcta": "2023 visitante"
+  },
+  "2025-05-17": {
+    "imagen": "/Camisetas/2024 arquero.jpg",
+    "opciones": ["2024 arquero", "2025 local", "1926", "1984-85 local", "1986-87 visitante", "1997-98 local"],
+    "correcta": "2024 arquero"
+  },
+  "2025-05-18": {
+    "imagen": "/Camisetas/2025 local.jpg",
+    "opciones": ["1997-98 local", "1926", "1986-87 visitante", "1984-85 local", "2009-09 local", "2025 local"],
+    "correcta": "2025 local"
+  },
+  "2025-05-19": {
+    "imagen": "/Camisetas/1997-98 local.jpg",
+    "opciones": ["1984-85 local", "1986-87 visitante", "2006-07 local", "2009-09 local", "1926", "1997-98 local"],
+    "correcta": "1997-98 local"
+  },
+  "2025-05-20": {
+    "imagen": "/Camisetas/1984-85 local.jpg",
+    "opciones": ["2009-09 local", "1984-85 local", "2006-07 visitante", "1986-87 visitante", "2006-07 local", "1926"],
+    "correcta": "1984-85 local"
+  },
+  "2025-05-21": {
+    "imagen": "/Camisetas/1926.jpg",
+    "opciones": ["2009-09 local", "2006-07 local", "2004-05 local", "2006-07 visitante", "1926", "1986-87 visitante"],
+    "correcta": "1926"
+  },
+  "2025-05-22": {
+    "imagen": "/Camisetas/1986-87 visitante.jpg",
+    "opciones": ["2006-07 local", "2003-04 local", "1986-87 visitante", "2004-05 local", "2006-07 visitante", "2009-09 local"],
+    "correcta": "1986-87 visitante"
+  }
+}
