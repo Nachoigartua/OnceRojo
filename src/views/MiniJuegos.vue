@@ -1,9 +1,7 @@
 <template>
   <div class="text-white text-center min-vh-100 d-flex flex-column align-items-center justify-content-center px-3" style="background: radial-gradient(circle, #e70013 30%, #a0000f 100%)">
-    <!-- Botón en la parte superior derecha -->
-    <div class="boton-inicio">
-      <router-link to="/" class="btn-inicio">RojoFut25</router-link>
-    </div>
+    <!-- Botón en la parte superior izquierda -->
+ 
 
     <h2 class="mb-4">🕹️ Elegí tu Minijuego</h2>
 
@@ -33,16 +31,17 @@ const router = useRouter()
 
 const juegos = [
   { titulo: 'Adivina el gol', descripcion: '¿Como termino esta jugada?' },
-  { titulo: 'Adiviná el Jugador', descripcion: 'Conocé ídolos y leyendas.' },
+  { titulo: 'Adiviná el Jugador por trayectoria', descripcion: 'Conocé ídolos y leyendas.' },
   { titulo: 'Momentos Clave', descripcion: 'Identificá hitos inolvidables.' },
   { titulo: 'Orden Cronológico', descripcion: 'Ordená partidos y logros.' },
   { titulo: 'Camisetas Legendarias', descripcion: '¿Cuál es cuál?' }
 ]
 
-// Función para manejar el clic en "Jugar"
 const jugar = (titulo) => {
   if (titulo === 'Adivina el gol') {
-    router.push('/adivina-el-gol') // Redirige solo si es "Adivina el gol"
+    router.push('/adivina-el-gol')
+  } else if (titulo === 'Adiviná el Jugador por trayectoria') {
+    router.push('/adivina-jugador-trayectoria') // ✅ Redirige a la ruta correcta
   } else {
     console.log(`El juego "${titulo}" aún no está disponible.`)
   }
@@ -50,7 +49,6 @@ const jugar = (titulo) => {
 </script>
 
 <style scoped>
-/* Botón en la parte superior derecha */
 .boton-inicio {
   position: absolute;
   top: 1rem;

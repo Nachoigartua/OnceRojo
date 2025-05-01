@@ -2,11 +2,8 @@
   <div class="adivina-el-gol-wrapper d-flex min-vh-100 text-white position-relative" style="background-color: #e70013">
     
     <!-- BOTÓN DE INICIO ARRIBA A LA IZQUIERDA -->
-    <div class="boton-inicio position-absolute" style="top: 20px; left: 20px; z-index: 10;">
-      <router-link to="/" class="btn btn-light fw-bold">
-        RojoFut25
-      </router-link>
-    </div>
+ 
+
 
     <!-- VIDEO IZQUIERDA -->
     <div class="video-container flex-grow-1 d-flex justify-content-center align-items-center p-4">

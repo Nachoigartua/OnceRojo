@@ -1,0 +1,347 @@
+{
+  "jugadores": [
+    {
+      "nombre": "Sergio Aguero",
+      "clubes": [
+        "Independiente",
+        "Atlético de Madrid",
+        "Manchester City",
+        "FC Barcelona",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Esteban Cambiasso",
+      "clubes": [
+        "Argentinos Juniors",
+        "Independiente",
+        "River Plate",
+        "Real Madrid",
+        "Inter",
+        "Leicester City",
+        "Olympiacos",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Gabriel Milito",
+      "clubes": [
+        "Independiente",
+        "Real Zaragoza",
+        "FC Barcelona",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Jorge Burruchaga",
+      "clubes": [
+        "Arsenal de Sarandí",
+        "Independiente",
+        "Nantes",
+        "Valenciennes",
+        "Independiente",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Ricardo Bochini",
+      "clubes": [
+        "Independiente (único club)",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Federico Mancuello",
+      "clubes": [
+        "Independiente",
+        "Flamengo",
+        "Cruzeiro",
+        "Toluca",
+        "Puebla",
+        "Vélez",
+        "Belgrano (actual club)"
+      ]
+    },
+    {
+      "nombre": "Matías Pisano",
+      "clubes": [
+        "Chacarita",
+        "Independiente",
+        "Cruzeiro",
+        "Santa Cruz",
+        "Talleres",
+        "América de Cali",
+        "Ittihad Kalba",
+        "Aldosivi",
+        "Atromitos",
+        "Argentinos Jrs",
+        "Marathón (actual club en Honduras)"
+      ]
+    },
+    {
+      "nombre": "Ezequiel Barco",
+      "clubes": [
+        "Independiente",
+        "Atlanta United",
+        "River Plate (actual club)"
+      ]
+    },
+    {
+      "nombre": "Maximiliano Meza",
+      "clubes": [
+        "Gimnasia LP",
+        "Independiente",
+        "Monterrey (actual club)"
+      ]
+    },
+    {
+      "nombre": "Alan Velasco",
+      "clubes": [
+        "Independiente",
+        "FC Dallas (actual club)"
+      ]
+    },
+    {
+      "nombre": "Silvio Romero",
+      "clubes": [
+        "Instituto",
+        "Lanús",
+        "Rennes",
+        "Chiapas",
+        "América (México)",
+        "Independiente",
+        "Fortaleza (actual club)"
+      ]
+    },
+    {
+      "nombre": "Martín Benítez",
+      "clubes": [
+        "Independiente",
+        "Vasco da Gama",
+        "São Paulo",
+        "Grêmio",
+        "América Mineiro (actual club)"
+      ]
+    },
+    {
+      "nombre": "Juan Sánchez Miño",
+      "clubes": [
+        "Boca",
+        "Estudiantes",
+        "Torino",
+        "Independiente",
+        "Elche",
+        "Estudiantes",
+        "Colón",
+        "Lanús (actual club)"
+      ]
+    },
+    {
+      "nombre": "Leandro Fernández",
+      "clubes": [
+        "Defensa y Justicia",
+        "Ferro",
+        "Godoy Cruz",
+        "Independiente",
+        "Vélez",
+        "Nacional (URU)",
+        "Universidad de Chile (actual club)"
+      ]
+    },
+    {
+      "nombre": "Emiliano Rigoni",
+      "clubes": [
+        "Belgrano",
+        "Independiente",
+        "Zenit",
+        "Atalanta",
+        "Sampdoria",
+        "São Paulo",
+        "Austin FC (actual club)"
+      ]
+    },
+    {
+      "nombre": "Gonzalo Rehak",
+      "clubes": [
+        "Independiente",
+        "Nueva Chicago",
+        "Delfín (Ecuador)",
+        "Mitre (SdE)",
+        "Club Bolívar",
+        "Atlético Rafaela (actual club)"
+      ]
+    },
+    {
+      "nombre": "Julio Furch",
+      "clubes": [
+        "Olimpo",
+        "San Lorenzo",
+        "Arsenal",
+        "Belgrano",
+        "Veracruz",
+        "Santos Laguna",
+        "Atlas",
+        "Santos (BRA) (actual club)"
+      ]
+    },
+    {
+      "nombre": "Lucas Albertengo",
+      "clubes": [
+        "Rafaela",
+        "Independiente",
+        "Estudiantes",
+        "Newell's",
+        "Arsenal",
+        "Tigre",
+        "Agropecuario (actual club)"
+      ]
+    },
+    {
+      "nombre": "Nicolás Tagliafico",
+      "clubes": [
+        "Banfield",
+        "Independiente",
+        "Ajax",
+        "Olympique de Lyon (actual club)"
+      ]
+    },
+    {
+      "nombre": "Facundo Parra",
+      "clubes": [
+        "Chacarita",
+        "AEL (Grecia)",
+        "Independiente",
+        "Atalanta",
+        "Asteras Tripolis",
+        "Atlético Tucumán",
+        "Santa Cruz",
+        "Agropecuario",
+        "Nacional (P)",
+        "Chacarita",
+        "Sol de Mayo",
+        "Chacarita (actual club)"
+      ]
+    },
+    {
+      "nombre": "Leonel Núñez",
+      "clubes": [
+        "Argentinos",
+        "Olympiacos",
+        "Independiente",
+        "Bursaspor",
+        "Argentinos",
+        "Independiente",
+        "Johor (Malasia)",
+        "Mushuc Runa",
+        "PS TNI (Indonesia)",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Daniel Montenegro",
+      "clubes": [
+        "Huracán",
+        "Independiente",
+        "Olympique de Marsella",
+        "Zaragoza",
+        "Osasuna",
+        "River",
+        "América (MEX)",
+        "Independiente",
+        "Huracán",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Hernán Fredes",
+      "clubes": [
+        "Independiente",
+        "Metalist",
+        "Defensa y Justicia",
+        "3 de Febrero",
+        "Sol de América",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Adrián Gabbarini",
+      "clubes": [
+        "Independiente",
+        "Newell’s",
+        "Argentinos",
+        "LDU Quito",
+        "Aucas (actual club)"
+      ]
+    },
+    {
+      "nombre": "Diego Rodríguez (Ruso)",
+      "clubes": [
+        "Independiente",
+        "Rosario Central",
+        "Tijuana",
+        "Defensa y Justicia",
+        "Central Córdoba",
+        "Godoy Cruz (actual club)"
+      ]
+    },
+    {
+      "nombre": "Lucas Pusineri",
+      "clubes": [
+        "Almagro",
+        "San Lorenzo",
+        "Independiente",
+        "Saturn (Rusia)",
+        "River",
+        "Independiente",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Cristian Rodríguez (Cebolla)",
+      "clubes": [
+        "Peñarol",
+        "PSG",
+        "Benfica",
+        "Porto",
+        "Atlético de Madrid",
+        "Parma",
+        "Independiente",
+        "Peñarol",
+        "Plaza Colonia",
+        "Retirado"
+      ]
+    },
+    {
+      "nombre": "Fernando Gaibor",
+      "clubes": [
+        "Emelec",
+        "Independiente",
+        "Al Wasl",
+        "Guayaquil City",
+        "Barcelona SC (actual club)"
+      ]
+    },
+    {
+      "nombre": "Jonathan Menéndez",
+      "clubes": [
+        "Chacarita",
+        "Talleres",
+        "Independiente",
+        "Real Salt Lake",
+        "Vélez",
+        "Newell’s (actual club)"
+      ]
+    },
+    {
+      "nombre": "Claudio Morel Rodríguez",
+      "clubes": [
+        "San Lorenzo",
+        "Boca",
+        "Deportivo La Coruña",
+        "Independiente",
+        "Sol de América",
+        "Retirado"
+      ]
+    }
+  ]
+}
