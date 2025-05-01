@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import Inicio from '../views/Inicio.vue';
 
 const routes = [
@@ -8,12 +8,11 @@ const routes = [
   { path: '/adivina-jugador-trayectoria', name: 'AdivinaJugadorTrayectoria', component: () => import('../views/AdivinaJugadorTrayectoria.vue') },
   { path: '/adivina-camiseta', name: 'AdivinaCamiseta', component: () => import('../views/AdivinaCamiseta.vue') },
   { path: '/adivina-el-intruso', name: 'AdivinaElIntruso', component: () => import('../views/AdivinaElIntruso.vue') },
-  { path: '/rodle', name: 'Rodle', component: () => import('../views/Rodle.vue') } // 👈 Nueva ruta para Rodle
+  { path: '/rodle', name: 'Rodle', component: () => import('../views/Rodle.vue') },
 ];
 
-
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(), // Cambiado a hash mode
   routes,
 });
 
