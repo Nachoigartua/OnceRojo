@@ -2,11 +2,13 @@
   <div class="intruso-container text-white text-center px-3">
     <h2 class="titulo-juego mb-5 animate-slide-in">🔎 Adiviná el Intruso 🔎</h2>
 
+    <!-- Mensaje de "Ya respondiste hoy" -->
     <div v-if="yaJugado">
       <p class="fs-5">Ya respondiste hoy. Vuelve en:</p>
       <h3 class="reloj">{{ tiempoRestante }}</h3>
     </div>
 
+    <!-- Juego principal -->
     <div v-else-if="opciones.length">
       <p class="mb-4 fs-5 animate-fade-in">¿Quién no jugó en el Rey de Copas?</p>
 
@@ -37,6 +39,7 @@
       </div>
     </div>
 
+    <!-- Mensaje de "No hay desafío cargado" -->
     <div v-else>
       <p class="text-warning">No hay desafío cargado para hoy.</p>
     </div>
@@ -44,65 +47,79 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
 
-const opciones = ref([])
-const intruso = ref('')
-const respuestaSeleccionada = ref(false)
-const esCorrecta = ref(false)
-const mensajeResultado = ref('')
-const yaJugado = ref(false)
-const tiempoRestante = ref('')
+const opciones = ref([]); // Opciones del desafío
+const intruso = ref(''); // Respuesta correcta (el intruso)
+const respuestaSeleccionada = ref(false); // Si ya se seleccionó una respuesta
+const esCorrecta = ref(false); // Si la respuesta seleccionada es correcta
+const mensajeResultado = ref(''); // Mensaje de resultado
+const yaJugado = ref(false); // Si ya jugó hoy
+const tiempoRestante = ref(''); // Tiempo restante para el próximo desafío
 
+// Función para obtener la fecha clave (YYYY-MM-DD)
 const obtenerFechaClave = () => {
-  const ahora = new Date()
-  ahora.setUTCHours(3, 0, 0, 0)
-  return ahora.toISOString().slice(0, 10)
-}
+  const ahora = new Date();
+  ahora.setUTCHours(3, 0, 0, 0); // Ajuste para UTC-3
+  return ahora.toISOString().slice(0, 10);
+};
 
+// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
-  const ahora = new Date()
-  const mañana = new Date()
-  mañana.setUTCHours(27, 0, 0, 0)
-  const diff = mañana - ahora
+  const ahora = new Date();
+  const mañana = new Date();
+  mañana.setUTCHours(27, 0, 0, 0); // Mañana a las 00:00 (UTC-3)
+  const diff = mañana - ahora;
 
-  const horas = String(Math.floor(diff / 1000 / 60 / 60)).padStart(2, '0')
-  const minutos = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0')
-  const segundos = String(Math.floor((diff / 1000) % 60)).padStart(2, '0')
+  const horas = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
+  const minutos = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+  const segundos = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
 
-  tiempoRestante.value = `${horas}:${minutos}:${segundos}`
-}
+  tiempoRestante.value = `${horas}:${minutos}:${segundos}`;
+};
 
+// Función para verificar la respuesta seleccionada
 const verificarRespuesta = (opcion) => {
-  respuestaSeleccionada.value = true
-  esCorrecta.value = opcion === intruso.value
+  respuestaSeleccionada.value = true;
+  esCorrecta.value = opcion === intruso.value;
   mensajeResultado.value = esCorrecta.value
     ? '✅ ¡Correcto!'
-    : `❌ Incorrecto. El intruso era: ${intruso.value}`
-  localStorage.setItem('intruso-jugado-' + obtenerFechaClave(), 'true')
-}
+    : `❌ Incorrecto. El intruso era: ${intruso.value}`;
+  localStorage.setItem('intruso-jugado-' + obtenerFechaClave(), 'true');
+};
 
-onMounted(async () => {
-  const clave = obtenerFechaClave()
-  yaJugado.value = localStorage.getItem('intruso-jugado-' + clave) === 'true'
+// Función para cargar los datos del JSON
+const cargarDatosDelDia = async () => {
+  const clave = obtenerFechaClave();
+  try {
+    const response = await fetch(`${import.meta.env.BASE_URL}adivina-intruso.json`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+    const entradaHoy = data[clave];
+
+    if (entradaHoy) {
+      opciones.value = entradaHoy.opciones;
+      intruso.value = entradaHoy.intruso;
+    } else {
+      console.warn('No hay desafío cargado para hoy.');
+    }
+  } catch (error) {
+    console.error('Error cargando el JSON:', error);
+  }
+};
+
+// Montar el componente
+onMounted(() => {
+  const clave = obtenerFechaClave();
+  yaJugado.value = localStorage.getItem('intruso-jugado-' + clave) === 'true';
 
   if (yaJugado.value) {
-    calcularTiempoRestante()
-    setInterval(calcularTiempoRestante, 1000)
+    calcularTiempoRestante();
+    setInterval(calcularTiempoRestante, 1000);
   } else {
-    try {
-      const res = await fetch('/adivina-intruso.json')
-      const data = await res.json()
-      const entradaHoy = data[clave]
-      if (entradaHoy) {
-        opciones.value = entradaHoy.opciones
-        intruso.value = entradaHoy.intruso
-      }
-    } catch (error) {
-      console.error('Error cargando el JSON:', error)
-    }
+    cargarDatosDelDia();
   }
-})
+});
 </script>
 
 <style scoped>
