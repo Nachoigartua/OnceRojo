@@ -61,4 +61,13 @@ export default {
     box-shadow: 0 0 20px rgba(255, 100, 100, 0.7);
   }
 }
+html, body, #app {
+  transform: scale(0.6); /* Cambiá el valor a gusto */
+  transform-origin: top left;
+}
+
+body {
+  overflow-x: hidden;
+}
+
 </style>

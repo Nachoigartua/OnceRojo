@@ -29,18 +29,22 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const juegos = [
-  { titulo: 'Adiviná el Gol', descripcion: '¿Cómo terminó esta jugada?' },
-  { titulo: 'Adiviná el Jugador por trayectoria', descripcion: 'Conocé ídolos y leyendas.' },
+  { titulo: 'Adiviná la Jugada', descripcion: '¿Cómo terminó esta jugada?' },
+  { titulo: 'Adiviná el Jugador por trayectoria', descripcion: 'Te diran clubes por los que paso el jugador, Debes adivinar!.' },
   { titulo: 'Adiviná el Intruso', descripcion: 'Descubrí quién nunca jugó en el Rojo.' },
   { titulo: 'Rodle', descripcion: 'Un Wordle rojo por día.' },
-  { titulo: 'Camisetas Legendarias', descripcion: '¿Cuál es cuál?' },
+  { titulo: 'Camisetas Legendarias', descripcion: '¿Cuál es cuál? Adivina la camiseta' },
   {
     titulo: 'Trivia Roja',
-    descripcion: '⚡ Respondé en solo 10 segundos\n🎯 Preguntas infinitas sobre el Rey de Copas'
+    descripcion: '⚡ Respondé en solo 10 segundos\n⚽ 3 Preguntas de la historia del Rojo por dia'
   },
   {
     titulo: 'Top 10 Ventas',
-    descripcion: '💸 ¿Quién fue el más caro?\n📸 Con fotos e importes reales'
+    descripcion: '💸 Ordena la piramide de mayor venta a menor venta.'
+  },
+  {
+    titulo: 'El 11 Histórico',
+    descripcion: '🧠 Completá las formaciones más recordadas del Rey de Copas.'
   }
 ]
 
@@ -59,6 +63,8 @@ const jugar = (titulo) => {
     router.push('/preguntas-respuestas')
   } else if (titulo === 'Top 10 Ventas') {
     router.push('/venta-jugadores')
+  } else if (titulo === 'El 11 Histórico') {
+    router.push('/el-11-historico')
   } else {
     alert(`El juego "${titulo}" aún no está disponible.`)
   }

@@ -10,7 +10,8 @@ const routes = [
   { path: '/adivina-el-intruso', name: 'AdivinaElIntruso', component: () => import('../views/AdivinaElIntruso.vue') },
   { path: '/rodle', name: 'Rodle', component: () => import('../views/Rodle.vue') },
   { path: '/preguntas-respuestas', name: 'PreguntasYRespuestas', component: () => import('../views/PreguntasRespuestas.vue') },
-  { path: '/venta-jugadores', name: 'VentaJugadores', component: () => import('../views/VentaJugadores.vue') }
+  { path: '/venta-jugadores', name: 'VentaJugadores', component: () => import('../views/VentaJugadores.vue') },
+  { path: '/el-11-historico', name: 'El11Historico', component: () => import('../views/El11Historico.vue') } // ← Nueva ruta
 ];
 
 const router = createRouter({
