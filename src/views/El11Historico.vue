@@ -13,7 +13,7 @@
         v-model="inputNombre"
         @keyup.enter="verificarNombre"
         class="input-jugador"
-        :disabled="tiempo.value <= 0 || mostrarCartel || juegoFinalizado"
+        :disabled="tiempo.value <= 0 || juegoFinalizado"
         placeholder="Escribe un nombre de jugador o DT..."
       />
       <p v-if="mensajeError" class="mensaje-error">{{ mensajeError }}</p>
@@ -89,6 +89,7 @@ const tiempoFormateado = computed(() => {
 
 // Normalizar texto (elimina acentos y convierte a minúsculas)
 function normalizarTexto(texto) {
+  if (typeof texto !== 'string') return ''; // Validar que el texto sea una cadena
   return texto
     .normalize('NFD') // Descompone caracteres con acentos
     .replace(/[\u0300-\u036f]/g, '') // Elimina los acentos
@@ -99,20 +100,22 @@ function normalizarTexto(texto) {
 function generarPizarra(formacion) {
   const posiciones = formacion.map((jugador) => jugador.posicion);
   const arquero = posiciones.filter((pos) => pos === 'POR');
-  const defensas = posiciones.filter((pos) => pos.startsWith('DF')).sort((a, b) => {
-    if (a === 'DFI') return -1; // DFI goes to the left
-    if (b === 'DFI') return 1;
-    if (a === 'DFD') return 1; // DFD goes to the right
-    if (b === 'DFD') return -1;
-    return 0;
+  const defensas = posiciones.filter((pos) => pos.startsWith('DF'));
+
+  // Invertir DFI y DFD
+  const defensasInvertidas = defensas.map((pos) => {
+    if (pos === 'DFI') return 'DFD';
+    if (pos === 'DFD') return 'DFI';
+    return pos;
   });
+
   const mediocampistas = posiciones.filter((pos) => pos.startsWith('MC'));
   const delanteros = posiciones.filter((pos) => ['EI', 'DC', 'ED'].includes(pos));
 
   return [
     delanteros,
     mediocampistas,
-    defensas,
+    defensasInvertidas,
     arquero, // El arquero siempre al final
   ];
 }
@@ -133,6 +136,11 @@ onMounted(async () => {
     const data = await fetch(`${import.meta.env.BASE_URL}onceHistorico.json`).then((res) =>
       res.json()
     );
+
+    if (!data || !data[hoy]) {
+      throw new Error('Datos del equipo no disponibles para hoy.');
+    }
+
     equipoData.value = data[hoy] || { equipo: '', dt: '', formacion: [], esquema: '4-3-3', tiempo_limite: 60 };
 
     // Generar la pizarra según la formación
@@ -167,6 +175,7 @@ onMounted(async () => {
     iniciarTemporizador();
   } catch (error) {
     console.error('Error al cargar los datos:', error);
+    mostrarMensajeCartel('Error al cargar los datos. Intenta nuevamente más tarde.');
   }
 });
 
@@ -216,6 +225,7 @@ function verificarNombre() {
 
 // Iniciar el temporizador
 function iniciarTemporizador() {
+  if (intervalo) clearInterval(intervalo); // Asegurarse de limpiar cualquier temporizador previo
   intervalo = setInterval(() => {
     tiempo.value--;
     if (tiempo.value <= 0) {
