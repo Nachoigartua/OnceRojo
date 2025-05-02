@@ -3,10 +3,32 @@
     <h2 class="titulo-juego mb-4 animate-slide-in">🟥 Rodle 🟥</h2>
 
     <!-- Mensaje de "Ya jugaste hoy" -->
-    <div v-if="yaJugado">
-      <p class="fs-5">Ya jugaste hoy. Volvé en:</p>
-      <h3 class="reloj">{{ tiempoRestante }}</h3>
+  <!-- Mensaje de "Ya jugaste hoy" -->
+<div v-if="yaJugado && palabraDelDia">
+  <p class="fs-5">Ya jugaste hoy. Volvé en:</p>
+  <h3 class="reloj">{{ tiempoRestante }}</h3>
+
+  <!-- Mostrar la grilla con intentos anteriores -->
+  <div class="grilla mt-4">
+    <div v-for="fila in 5" :key="fila" class="fila">
+      <div
+        v-for="col in palabraDelDia.length"
+        :key="col"
+        class="letra"
+        :class="getColor(fila - 1, col - 1)"
+      >
+        {{ getChar(fila - 1, col - 1) }}
+      </div>
     </div>
+  </div>
+
+  <div class="mt-4">
+    <p class="fs-5" :class="esCorrecto ? 'text-success' : 'text-danger'">
+      {{ esCorrecto ? '✅ ¡Correcto!' : `❌ Era: ${palabraDelDia}` }}
+    </p>
+  </div>
+</div>
+
 
     <!-- Juego principal -->
     <div v-else-if="palabraDelDia">
@@ -117,11 +139,14 @@ const intentarAdivinar = () => {
   if (intentoStr === palabraDelDia.value) {
     esCorrecto.value = true;
     juegoTerminado.value = true;
-    localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true');
   } else if (intentos.value.length >= 5) {
     juegoTerminado.value = true;
-    localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true');
   }
+
+  // Marcar como jugado y guardar progreso
+  localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true');
+  localStorage.setItem('rodle-intentos-' + obtenerFechaClave(), JSON.stringify(intentos.value));
+  localStorage.setItem('rodle-correcto-' + obtenerFechaClave(), esCorrecto.value.toString());
 
   intentoActual.value = [];
 };
@@ -165,23 +190,33 @@ onMounted(async () => {
   const clave = obtenerFechaClave();
   yaJugado.value = localStorage.getItem('rodle-jugado-' + clave) === 'true';
 
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}Rodle.json`);
+    const data = await res.json();
+    if (data[clave]) {
+      palabraDelDia.value = data[clave].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+  } catch (error) {
+    console.error('Error cargando Rodle.json:', error);
+  }
+
   if (yaJugado.value) {
     calcularTiempoRestante();
     setInterval(calcularTiempoRestante, 1000);
-  } else {
-    try {
-      const res = await fetch(`${import.meta.env.BASE_URL}Rodle.json`);
-      const data = await res.json();
-      if (data[clave]) {
-        palabraDelDia.value = data[clave].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      }
-    } catch (error) {
-      console.error('Error cargando Rodle.json:', error);
+
+    // Recuperar intentos previos (opcional, si los guardás)
+    const intentosPrevios = localStorage.getItem('rodle-intentos-' + clave);
+    const correctoPrevio = localStorage.getItem('rodle-correcto-' + clave);
+    if (intentosPrevios) {
+      intentos.value = JSON.parse(intentosPrevios);
+      juegoTerminado.value = true;
+      esCorrecto.value = correctoPrevio === 'true';
     }
   }
 
   window.addEventListener('keydown', handleKey);
 });
+
 
 // Limpiar eventos al desmontar el componente
 onBeforeUnmount(() => {

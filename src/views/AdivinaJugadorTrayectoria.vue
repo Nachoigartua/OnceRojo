@@ -3,16 +3,37 @@
     class="adivina-jugador-wrapper d-flex flex-column align-items-center justify-content-center text-white min-vh-100"
     style="background: linear-gradient(to bottom, #800000, #e70013)"
   >
-    <!-- Mensaje de "Ya respondiste hoy" -->
-    <div v-if="yaJugado" class="text-center mt-3 mb-4">
-      <p class="fs-5">
-        Tu respuesta fue 
-        <span :class="{'text-success': esCorrecta, 'text-danger': !esCorrecta}">
-{{ esCorrecta ? 'CORRECTA' : 'INCORRECTA' }}: {{ jugadorActual?.nombre || 'Desconocido' }} {{ esCorrecta ? '(' + jugadorActual?.clubes.join(' ➡ ') + ')' : '' }}        </span>
-      </p>
-      <p class="fs-5">Ya respondiste hoy. Vuelve en:</p>
-      <h3 class="reloj">{{ tiempoRestante }}</h3>
+    <!-- Si ya jugó, se muestra solo el estado de las pistas, vidas y el reloj -->
+  <div v-if="yaJugado">
+  <h2 class="mb-4">⚽ Adivina el Jugador</h2>
+
+  <div class="pista-container mb-4 d-flex flex-wrap justify-content-center">
+    <div class="pista-text me-2 mb-2" v-for="(pista, index) in pistasMostradas" :key="index">
+      {{ pista }}
     </div>
+  </div>
+
+  <div class="vidas mb-3 d-flex justify-content-center">
+    <img
+      v-for="n in 5"
+      :key="n"
+      :class="['escudo-vida', { 'escudo-perdido': n > vidas, 'temblor': escudosTemblando }]"
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Escudo_del_Club_Atl%C3%A9tico_Independiente.svg/973px-Escudo_del_Club_Atl%C3%A9tico_Independiente.svg.png"
+      alt="vida"
+    />
+  </div>
+
+  <div class="resultado-container mt-4">
+    <p v-if="esCorrecta" class="text-success">🎉 ¡CORRECTO! Era {{ jugadorActual?.nombre }}</p>
+    <p v-else class="text-danger">❌ INCORRECTO. Era {{ jugadorActual?.nombre }}</p>
+  </div>
+
+  <div class="text-center mt-3">
+    <p class="fs-5">Ya respondiste hoy. Vuelve en:</p>
+    <h3 class="reloj">{{ tiempoRestante }}</h3>
+  </div>
+</div>
+
 
     <!-- Juego principal -->
     <div v-else>
@@ -62,30 +83,34 @@
       </div>
 
       <div v-if="resultado" class="resultado-container mt-4">
-        <p>{{ resultado }}</p>
+        <p v-if="esCorrecta" class="text-success">🎉 ¡CORRECTO! Era {{ jugadorActual?.nombre }}</p>
+        <p v-else class="text-danger">❌ INCORRECTO. Intenta nuevamente.</p>
       </div>
     </div>
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const jugadores = ref([]); // Lista completa de jugadores
-const jugadorActual = ref(null); // Jugador del día
-const pistaIndex = ref(0); // Índice de la pista actual
-const pistasMostradas = ref([]); // Pistas mostradas
-const filtro = ref(''); // Texto ingresado por el usuario
-const jugadoresFiltrados = ref([]); // Lista de jugadores filtrados
-const respuesta = ref(''); // Respuesta seleccionada
-const resultado = ref(''); // Resultado del intento
-const vidas = ref(5); // Vidas restantes
-const escudosTemblando = ref(false); // Animación de temblor
-const yaJugado = ref(false); // Si ya jugó hoy
-const tiempoRestante = ref(''); // Tiempo restante para el próximo intento
-const esCorrecta = ref(false); // Indica si la respuesta fue correcta
+const jugadores = ref([]);
+const jugadorActual = ref(null);
+const pistaIndex = ref(0);
+const pistasMostradas = ref([]);
+const filtro = ref('');
+const jugadoresFiltrados = ref([]);
+const respuesta = ref('');
+const resultado = ref('');
+const vidas = ref(5);
+const escudosTemblando = ref(false);
+const yaJugado = ref(false);
+const tiempoRestante = ref('');
+const esCorrecta = ref(false);
 
-// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
+const hoy = new Date().toISOString().slice(0, 10);
+
+// Calcular tiempo hasta medianoche
 const calcularTiempoRestante = () => {
   const ahora = new Date();
   const proximaMedianoche = new Date(ahora);
@@ -97,43 +122,56 @@ const calcularTiempoRestante = () => {
   tiempoRestante.value = `${horas}h ${minutos}m`;
 };
 
-// Función para verificar si el usuario ya respondió
+// Verificar si ya jugó hoy
 const verificarRespuestaGuardada = () => {
-  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
   const respuestaGuardada = localStorage.getItem(`jugador-jugado-${hoy}`);
-  const seleccionadaGuardada = localStorage.getItem(`respuesta-jugador`);
   if (respuestaGuardada) {
     yaJugado.value = true;
-    respuesta.value = seleccionadaGuardada;
+    respuesta.value = localStorage.getItem('respuesta-jugador') || '';
     esCorrecta.value = localStorage.getItem('respuesta-correcta') === 'true';
+    resultado.value = localStorage.getItem('resultado-jugador') || '';
+
+    const pistasGuardadas = localStorage.getItem(`pistas-mostradas-${hoy}`);
+    if (pistasGuardadas) {
+      pistasMostradas.value = JSON.parse(pistasGuardadas);
+      pistaIndex.value = pistasMostradas.value.length - 1;
+    }
+
+    const vidasGuardadas = localStorage.getItem(`vidas-jugador-${hoy}`);
+    if (vidasGuardadas !== null) {
+      vidas.value = parseInt(vidasGuardadas);
+    }
+
     calcularTiempoRestante();
   }
 };
 
-// Función para guardar la respuesta en localStorage
+// Guardar progreso
 const guardarRespuesta = () => {
-  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
   localStorage.setItem(`jugador-jugado-${hoy}`, 'respondido');
   localStorage.setItem('respuesta-correcta', esCorrecta.value);
   localStorage.setItem('respuesta-jugador', jugadorActual.value?.nombre || '');
+  localStorage.setItem('resultado-jugador', resultado.value);
+  localStorage.setItem(`pistas-mostradas-${hoy}`, JSON.stringify(pistasMostradas.value));
+  localStorage.setItem(`vidas-jugador-${hoy}`, vidas.value);
   yaJugado.value = true;
   calcularTiempoRestante();
 };
 
-// Cargar datos del JSON al montar el componente
+// Cargar el jugador del día
 const cargarJugadorDelDia = async () => {
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}contenido_jugador_del_dia.json`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
-    const hoy = new Date().toISOString().slice(0, 10);
-    const jugadorDelDia = data.jugadoresPorDia.find((jugador) => jugador.fecha === hoy);
-
+    const jugadorDelDia = data.jugadoresPorDia.find(j => j.fecha === hoy);
     if (jugadorDelDia) {
       jugadorActual.value = jugadorDelDia;
-      pistaIndex.value = 0;
-      pistasMostradas.value = [`Debutó en ${jugadorDelDia.clubes[0]}`];
+      if (pistasMostradas.value.length === 0) {
+        pistaIndex.value = 0;
+        pistasMostradas.value = [`Debutó en ${jugadorDelDia.clubes[0]}`];
+      }
     } else {
       resultado.value = '📅 No hay jugador asignado para hoy.';
     }
@@ -143,7 +181,7 @@ const cargarJugadorDelDia = async () => {
   }
 };
 
-// Mostrar pistas adicionales
+// Mostrar pista
 const mostrarPista = () => {
   if (vidas.value <= 0) {
     activarTemblor();
@@ -162,23 +200,24 @@ const mostrarPista = () => {
 
   vidas.value--;
   activarTemblor();
+  localStorage.setItem(`pistas-mostradas-${hoy}`, JSON.stringify(pistasMostradas.value));
+  localStorage.setItem(`vidas-jugador-${hoy}`, vidas.value);
 };
 
-// Verificar la respuesta seleccionada
+// Verificar la respuesta
 const verificarRespuesta = () => {
   if (yaJugado.value) return;
-
   if (!jugadorActual.value) {
     resultado.value = '❌ Error: No se pudo cargar el jugador del día.';
     return;
   }
 
   if (respuesta.value === jugadorActual.value.nombre) {
-    resultado.value = `🎉 ¡CORRECTO! Era ${jugadorActual.value.nombre}`;
     esCorrecta.value = true;
+    resultado.value = '✅ ¡Correcto!';
   } else {
-    resultado.value = '❌ INCORRECTO. Intenta nuevamente.';
     esCorrecta.value = false;
+    resultado.value = '❌ Incorrecto.';
     if (vidas.value > 0) vidas.value--;
   }
 
@@ -197,7 +236,7 @@ const cargarJugadores = async () => {
   }
 };
 
-// Actualizar sugerencias de autocompletado
+// Autocompletado
 const actualizarSugerencias = () => {
   if (filtro.value.trim().length >= 3) {
     jugadoresFiltrados.value = jugadores.value.filter((jugador) =>
@@ -208,14 +247,13 @@ const actualizarSugerencias = () => {
   }
 };
 
-// Seleccionar un jugador de las sugerencias
 const seleccionarJugador = (nombre) => {
   respuesta.value = nombre;
   filtro.value = nombre;
   jugadoresFiltrados.value = [];
 };
 
-// Activar animación de temblor
+// Temblor escudos
 const activarTemblor = () => {
   escudosTemblando.value = false;
   void document.body.offsetWidth;
@@ -226,13 +264,14 @@ const activarTemblor = () => {
   }, 500);
 };
 
-// Montar el componente
+// Inicio
 onMounted(() => {
   verificarRespuestaGuardada();
   cargarJugadorDelDia();
   cargarJugadores();
 });
 </script>
+
 
 <style scoped>
 .adivina-jugador-wrapper {

@@ -64,223 +64,175 @@
 <script setup>
 import { ref, onMounted, computed, onUnmounted } from 'vue';
 
-const equipoData = ref({}); // Datos del equipo
-const nombresOriginales = ref([]); // Nombres originales del equipo
-const nombresAdivinados = ref({}); // Nombres adivinados por posición
+const equipoData = ref({});
+const nombresOriginales = ref([]);
+const nombresAdivinados = ref({});
 const inputNombre = ref('');
-const tiempo = ref(60); // Tiempo en segundos
-const fase = ref('formacion'); // Solo queda la fase "formacion"
-const juegoFinalizado = ref(false); // Indica si el juego ha finalizado
+const tiempo = ref(60);
+const juegoFinalizado = ref(false);
 
-const pizarra = ref([]); // Pizarra de jugadores según el esquema
+const pizarra = ref([]);
+const mensaje = ref('');
+const mostrarCartel = ref(false);
+const mensajeError = ref('');
 
-const mensaje = ref(''); // Mensaje del cartel
-const mostrarCartel = ref(false); // Controla la visibilidad del cartel
-const mensajeError = ref(''); // Mensaje de error para nombres incorrectos
+let intervalo;
 
-let intervalo; // Mover el intervalo a un ámbito superior para accederlo en onUnmounted
-
-// Formatear el tiempo restante en formato mm:ss
 const tiempoFormateado = computed(() => {
   const minutos = Math.floor(tiempo.value / 60);
   const segundos = tiempo.value % 60;
   return `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
 });
 
-// Normalizar texto (elimina acentos y convierte a minúsculas)
 function normalizarTexto(texto) {
-  if (typeof texto !== 'string') return ''; // Validar que el texto sea una cadena
+  if (typeof texto !== 'string') return '';
   return texto
-    .normalize('NFD') // Descompone caracteres con acentos
-    .replace(/[\u0300-\u036f]/g, '') // Elimina los acentos
-    .toLowerCase(); // Convierte a minúsculas
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 }
 
-// Generar la pizarra según el esquema
 function generarPizarra(formacion) {
-  const posiciones = formacion.map((jugador) => jugador.posicion);
-  const arquero = posiciones.filter((pos) => pos === 'POR');
-  const defensas = posiciones.filter((pos) => pos.startsWith('DF'));
-
-  // Invertir DFI y DFD
-  const defensasInvertidas = defensas.map((pos) => {
+  const posiciones = formacion.map((j) => j.posicion);
+  const defensas = posiciones.filter((p) => p.startsWith('DF')).map((pos) => {
     if (pos === 'DFI') return 'DFD';
     if (pos === 'DFD') return 'DFI';
     return pos;
   });
-
-  const mediocampistas = posiciones.filter((pos) => pos.startsWith('MC'));
-  const delanteros = posiciones.filter((pos) => ['EI', 'DC', 'ED'].includes(pos));
-
-  return [
-    delanteros,
-    mediocampistas,
-    defensasInvertidas,
-    arquero, // El arquero siempre al final
-  ];
+  const mediocampistas = posiciones.filter((p) => p.startsWith('MC'));
+  const delanteros = posiciones.filter((p) => ['EI', 'DC', 'ED'].includes(p));
+  const arquero = posiciones.filter((p) => p === 'POR');
+  return [delanteros, mediocampistas, defensas, arquero];
 }
 
-// Cargar datos al montar el componente
 onMounted(async () => {
   try {
+    const hoy = new Date().toISOString().split('T')[0];
     const ultimaPartida = localStorage.getItem('ultimaPartida');
-    const ahora = new Date();
-    const hoy = ahora.toISOString().split('T')[0];
+    nombresAdivinados.value = JSON.parse(localStorage.getItem('nombresAdivinados') || '{}');
+    juegoFinalizado.value = localStorage.getItem('juegoFinalizado') === 'true';
 
-    // Cargar nombres adivinados y estado del juego desde localStorage
-    const nombresGuardados = JSON.parse(localStorage.getItem('nombresAdivinados') || '{}');
-    nombresAdivinados.value = nombresGuardados;
+    const data = await fetch(`${import.meta.env.BASE_URL}onceHistorico.json`).then(res => res.json());
+    if (!data || !data[hoy]) throw new Error('Datos no disponibles');
 
-    // Verificar si el juego ya está finalizado
-    const juegoFinalizadoGuardado = localStorage.getItem('juegoFinalizado') === 'true';
-    const data = await fetch(`${import.meta.env.BASE_URL}onceHistorico.json`).then((res) =>
-      res.json()
-    );
-
-    if (!data || !data[hoy]) {
-      throw new Error('Datos del equipo no disponibles para hoy.');
-    }
-
-    equipoData.value = data[hoy] || { equipo: '', dt: '', formacion: [], esquema: '4-3-3', tiempo_limite: 60 };
-
-    // Generar la pizarra según la formación
+    equipoData.value = data[hoy];
     pizarra.value = generarPizarra(equipoData.value.formacion);
 
-    if (juegoFinalizadoGuardado) {
-      juegoFinalizado.value = true; // Marcar el juego como finalizado
-      mensaje.value = 'El juego ya ha finalizado.';
-      mostrarCartel.value = true;
-      return; // No continuar con la inicialización del temporizador
-    }
+    nombresOriginales.value = [
+      ...equipoData.value.formacion.map((j) => ({
+        nombre: normalizarTexto(j.nombre),
+        posicion: j.posicion,
+      })),
+      { nombre: normalizarTexto(equipoData.value.dt.nombre), posicion: 'DT' },
+    ];
 
-    if (ultimaPartida === hoy) {
-      const tiempoRestante = calcularTiempoRestante();
-      mensaje.value = `Vuelve a jugar en ${tiempoRestante}`;
+    if (juegoFinalizado.value) {
+      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante() ;
       mostrarCartel.value = true;
       return;
     }
 
-    // Establecer el tiempo límite desde el JSON
+    if (ultimaPartida === hoy) {
+      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante() ;
+      mostrarCartel.value = true;
+      return;
+    }
+
     tiempo.value = equipoData.value.tiempo_limite || 60;
-
-    // Normalizar nombres originales para comparación
-    nombresOriginales.value = [
-      ...equipoData.value.formacion.map((jugador) => ({
-        nombre: normalizarTexto(jugador.nombre),
-        posicion: jugador.posicion,
-      })),
-      { nombre: normalizarTexto(equipoData.value.dt), posicion: 'DT' },
-    ];
-
     iniciarTemporizador();
-  } catch (error) {
-    console.error('Error al cargar los datos:', error);
-    mostrarMensajeCartel('Error al cargar los datos. Intenta nuevamente más tarde.');
+
+  } catch (e) {
+    console.error(e);
+    mostrarMensajeCartel('Error al cargar los datos.');
   }
 });
 
-// Mostrar un cartel con mensaje y avanzar a la siguiente fase
 function mostrarMensajeCartel(texto) {
   mensaje.value = texto;
   mostrarCartel.value = true;
-
-  setTimeout(() => {
-    mostrarCartel.value = false;
-  }, 5000); // Mostrar el cartel por 5 segundos
+  setTimeout(() => (mostrarCartel.value = false), 5000);
 }
 
-// Verificar si el nombre ingresado es correcto
 function verificarNombre() {
-  if (juegoFinalizado.value) return; // Evitar que se pueda jugar si el juego terminó
+  if (juegoFinalizado.value) return;
 
   const nombreIngresado = normalizarTexto(inputNombre.value.trim());
   if (!nombreIngresado) return;
 
-  // Verificar si coincide con algún nombre completo o apellido
-  const jugadorEncontrado = nombresOriginales.value.find((jugador) => {
-    const nombreNormalizado = jugador.nombre;
-    const apellido = normalizarTexto(jugador.nombre.split(' ').pop()); // Obtener solo el apellido
-    return nombreNormalizado === nombreIngresado || apellido === nombreIngresado;
+  const jugador = nombresOriginales.value.find(j => {
+    const apellido = normalizarTexto(j.nombre.split(' ').pop());
+    return j.nombre === nombreIngresado || apellido === nombreIngresado;
   });
 
-  if (jugadorEncontrado && !nombresAdivinados.value[jugadorEncontrado.posicion]) {
-    nombresAdivinados.value[jugadorEncontrado.posicion] = jugadorEncontrado.nombre;
+  if (jugador && !nombresAdivinados.value[jugador.posicion]) {
+    nombresAdivinados.value[jugador.posicion] = jugador.nombre;
     inputNombre.value = '';
-    mensajeError.value = ''; // Limpiar mensaje de error
-
-    // Guardar progreso en localStorage
+    mensajeError.value = '';
     localStorage.setItem('nombresAdivinados', JSON.stringify(nombresAdivinados.value));
 
     if (Object.keys(nombresAdivinados.value).length === nombresOriginales.value.length) {
+      juegoFinalizado.value = true;
+      localStorage.setItem('juegoFinalizado', 'true');
+      clearInterval(intervalo);
       mostrarMensajeCartel('¡Felicidades! Has completado el 11 inicial.');
-      juegoFinalizado.value = true; // Marcar el juego como finalizado
-      localStorage.setItem('juegoFinalizado', 'true'); // Guardar estado finalizado
-      clearInterval(intervalo); // Detener el temporizador
     }
   } else {
     mensajeError.value = 'Nombre incorrecto o ya ingresado.';
-    setTimeout(() => (mensajeError.value = ''), 3000); // Ocultar mensaje después de 3 segundos
+    setTimeout(() => (mensajeError.value = ''), 3000);
   }
 }
 
-// Iniciar el temporizador
 function iniciarTemporizador() {
-  if (intervalo) clearInterval(intervalo); // Asegurarse de limpiar cualquier temporizador previo
+  if (intervalo) clearInterval(intervalo);
   intervalo = setInterval(() => {
     tiempo.value--;
     if (tiempo.value <= 0) {
       clearInterval(intervalo);
-      juegoFinalizado.value = true; // Marcar el juego como finalizado
-
-      // Guardar nombres adivinados y registrar que el usuario ya jugó
-      localStorage.setItem('nombresAdivinados', JSON.stringify(nombresAdivinados.value));
+      juegoFinalizado.value = true;
       const hoy = new Date().toISOString().split('T')[0];
+      localStorage.setItem('nombresAdivinados', JSON.stringify(nombresAdivinados.value));
       localStorage.setItem('ultimaPartida', hoy);
-
       if (Object.keys(nombresAdivinados.value).length === nombresOriginales.value.length) {
         mostrarMensajeCartel('¡Felicidades! Has completado el 11 inicial.');
       } else {
-        mostrarMensajeCartel('Se acabó el tiempo. Intenta nuevamente mañana.');
+        mostrarMensajeCartel('⏰ Se acabó el tiempo. Intenta mañana.');
       }
     }
   }, 1000);
 }
 
-// Limpiar estados al desmontar el componente
 onUnmounted(() => {
-  if (intervalo) clearInterval(intervalo); // Detener el temporizador si está activo
-  tiempo.value = 60; // Reiniciar el tiempo
-  juegoFinalizado.value = false; // Reiniciar el estado del juego
-  nombresAdivinados.value = {}; // Limpiar nombres adivinados
-  mostrarCartel.value = false; // Ocultar cualquier cartel
-  mensajeError.value = ''; // Limpiar mensajes de error
-  inputNombre.value = ''; // Limpiar el input
+  if (intervalo) clearInterval(intervalo);
 });
 
-// Calcular el tiempo restante para las 00:00 (hora de Argentina)
 function calcularTiempoRestante() {
   const ahora = new Date();
-  const proximaMedianoche = new Date(ahora);
-  proximaMedianoche.setHours(24, 0, 0, 0); // Establecer a las 00:00 del día siguiente
-  const diferencia = proximaMedianoche - ahora;
-
-  const horas = Math.floor(diferencia / (1000 * 60 * 60));
-  const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+  const finDia = new Date(ahora);
+  finDia.setHours(24, 0, 0, 0);
+  const ms = finDia - ahora;
+  const horas = Math.floor(ms / 3600000);
+  const minutos = Math.floor((ms % 3600000) / 60000);
   return `${horas}h ${minutos}m`;
 }
 
-// Mostrar la pista de un jugador o DT
 function mostrarPista(posicion) {
   let pista = '';
   if (posicion === 'DT') {
-    pista = equipoData.value.dt.pista; // Obtener la pista del DT
+    pista = equipoData.value.dt.pista;
   } else {
-    const jugador = equipoData.value.formacion.find((j) => j.posicion === posicion);
-    pista = jugador?.pista || 'No hay pista disponible para esta posición.';
+    const jugador = equipoData.value.formacion.find(j => j.posicion === posicion);
+    pista = jugador?.pista || 'Sin pista disponible.';
   }
   mostrarMensajeCartel(pista);
 }
+
+function generarPiramide() {
+  return pizarra.value
+    .map(linea => linea.map(posicion => nombresAdivinados.value[posicion] || posicion).join(' - '))
+    .join('\n');
+}
 </script>
+
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap');

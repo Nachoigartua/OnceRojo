@@ -4,14 +4,32 @@
 
     <!-- Mensaje de "Ya respondiste hoy" -->
     <div v-if="yaJugado">
-      <p class="fs-5">Ya respondiste hoy. Vuelve en:</p>
-      <h3 class="reloj">{{ tiempoRestante }}</h3>
+      <p class="fs-5">Ya has respondido hoy.</p>
+      <h3 class="reloj">Vuelve a intentarlo en: {{ tiempoRestante }}</h3>
+      <p class="mb-4 fs-5 animate-fade-in">{{ preguntaGuardada }}</p> <!-- Show stored question -->
+      <div class="row justify-content-center mt-4">
+        <div
+          class="col-10 col-md-4 mb-4"
+          v-for="(opcion, index) in opciones"
+          :key="index"
+        >
+          <button
+            class="boton-opcion"
+            :class="{
+              'correcta': opcion === intruso,
+              'incorrecta': opcion === respuestaGuardada && opcion !== intruso
+            }"
+            disabled
+          >
+            {{ opcion }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Juego principal -->
     <div v-else-if="opciones.length">
-      <p class="mb-4 fs-5 animate-fade-in">¿Quién no jugó en el Rey de Copas?</p>
-
+      <p class="mb-4 fs-5 animate-fade-in">{{ pregunta }}</p> <!-- Show current question -->
       <div class="row justify-content-center">
         <div
           class="col-10 col-md-4 mb-4"
@@ -23,7 +41,7 @@
             :disabled="respuestaSeleccionada"
             :class="{
               'correcta': respuestaSeleccionada && opcion === intruso,
-              'incorrecta': respuestaSeleccionada && opcion !== intruso
+              'incorrecta': respuestaSeleccionada && opcion === respuestaGuardada && opcion !== intruso
             }"
             @click="verificarRespuesta(opcion)"
           >
@@ -31,7 +49,6 @@
           </button>
         </div>
       </div>
-
       <div v-if="respuestaSeleccionada" class="mt-4 animate-slide-in">
         <p class="fs-5" :class="esCorrecta ? 'text-success' : 'text-danger'">
           {{ mensajeResultado }}
@@ -46,29 +63,32 @@
   </div>
 </template>
 
-<script setup>
+<<script setup>
 import { ref, onMounted } from 'vue';
 
-const opciones = ref([]); // Opciones del desafío
-const intruso = ref(''); // Respuesta correcta (el intruso)
-const respuestaSeleccionada = ref(false); // Si ya se seleccionó una respuesta
-const esCorrecta = ref(false); // Si la respuesta seleccionada es correcta
-const mensajeResultado = ref(''); // Mensaje de resultado
-const yaJugado = ref(false); // Si ya jugó hoy
-const tiempoRestante = ref(''); // Tiempo restante para el próximo desafío
+const opciones = ref([]); // Opciones del día
+const intruso = ref(''); // El intruso (respuesta correcta)
+const pregunta = ref('¿Quién no jugó en el Rey de Copas?');
+const preguntaGuardada = ref('');
+const respuestaSeleccionada = ref(false);
+const esCorrecta = ref(false);
+const mensajeResultado = ref('');
+const yaJugado = ref(false);
+const tiempoRestante = ref('');
+const respuestaGuardada = ref('');
 
-// Función para obtener la fecha clave (YYYY-MM-DD)
+// Obtener fecha clave en formato YYYY-MM-DD (con ajuste a UTC-3)
 const obtenerFechaClave = () => {
   const ahora = new Date();
-  ahora.setUTCHours(3, 0, 0, 0); // Ajuste para UTC-3
+  ahora.setUTCHours(3, 0, 0, 0); // UTC-3 fijo
   return ahora.toISOString().slice(0, 10);
 };
 
-// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
+// Calcular tiempo hasta las 00:00 del día siguiente en horario de Argentina
 const calcularTiempoRestante = () => {
   const ahora = new Date();
   const mañana = new Date();
-  mañana.setUTCHours(27, 0, 0, 0); // Mañana a las 00:00 (UTC-3)
+  mañana.setUTCHours(27, 0, 0, 0); // 00:00 de Argentina del día siguiente
   const diff = mañana - ahora;
 
   const horas = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
@@ -78,17 +98,22 @@ const calcularTiempoRestante = () => {
   tiempoRestante.value = `${horas}:${minutos}:${segundos}`;
 };
 
-// Función para verificar la respuesta seleccionada
+// Verificar la respuesta
 const verificarRespuesta = (opcion) => {
   respuestaSeleccionada.value = true;
   esCorrecta.value = opcion === intruso.value;
   mensajeResultado.value = esCorrecta.value
     ? '✅ ¡Correcto!'
     : `❌ Incorrecto. El intruso era: ${intruso.value}`;
-  localStorage.setItem('intruso-jugado-' + obtenerFechaClave(), 'true');
+
+  const clave = obtenerFechaClave();
+  localStorage.setItem('respuesta-' + clave, 'true');
+  localStorage.setItem('seleccionada-' + clave, opcion);
+  localStorage.setItem('correcta-' + clave, intruso.value);
+  localStorage.setItem('pregunta-' + clave, pregunta.value);
 };
 
-// Función para cargar los datos del JSON
+// Cargar el desafío del día desde el JSON
 const cargarDatosDelDia = async () => {
   const clave = obtenerFechaClave();
   try {
@@ -100,6 +125,7 @@ const cargarDatosDelDia = async () => {
     if (entradaHoy) {
       opciones.value = entradaHoy.opciones;
       intruso.value = entradaHoy.intruso;
+      pregunta.value = entradaHoy.pregunta || pregunta.value;
     } else {
       console.warn('No hay desafío cargado para hoy.');
     }
@@ -108,18 +134,24 @@ const cargarDatosDelDia = async () => {
   }
 };
 
-// Montar el componente
-onMounted(() => {
+// Al montar el componente
+onMounted(async () => {
   const clave = obtenerFechaClave();
-  yaJugado.value = localStorage.getItem('intruso-jugado-' + clave) === 'true';
+  yaJugado.value = localStorage.getItem('respuesta-' + clave) === 'true';
+
+  // Siempre cargamos los datos del día para tener las opciones visibles
+  await cargarDatosDelDia();
 
   if (yaJugado.value) {
+    respuestaGuardada.value = localStorage.getItem('seleccionada-' + clave) || '';
+    intruso.value = localStorage.getItem('correcta-' + clave) || '';
+    preguntaGuardada.value = localStorage.getItem('pregunta-' + clave) || pregunta.value;
     calcularTiempoRestante();
     setInterval(calcularTiempoRestante, 1000);
-  } else {
-    cargarDatosDelDia();
+    respuestaSeleccionada.value = true; // mostrar resultado en el template
   }
 });
+
 </script>
 
 <style scoped>
