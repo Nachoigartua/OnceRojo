@@ -18,7 +18,7 @@
       { "nombre": "Daniel Bertoni", "posicion": "ED", "pista": "Campeón del mundo y figura del Rojo." }
     ],
     "esquema": "4-3-3",
-    "tiempo_limite": 120,
+    "tiempo_limite": 5,
     "resultados_falsos": ["Juventus 1 - 0 Independiente", "Juventus 2 - 1 Independiente", "Juventus 1 - 1 Independiente"],
     "goleadores_falsos": ["Daniel Bertoni", "Miguel Ángel Raimondo", "Agustín Balbuena"]
   },
