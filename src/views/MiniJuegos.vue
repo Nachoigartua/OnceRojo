@@ -29,7 +29,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const juegos = [
-  { titulo: 'Adiviná la Jugada', descripcion: '¿Cómo terminó esta jugada?' },
+  { titulo: 'Adiviná el Gol', descripcion: '¿Cómo terminó esta jugada?' },
   { titulo: 'Adiviná el Jugador por trayectoria', descripcion: 'Te diran clubes por los que paso el jugador, Debes adivinar!.' },
   { titulo: 'Adiviná el Intruso', descripcion: 'Descubrí quién nunca jugó en el Rojo.' },
   { titulo: 'Rodle', descripcion: 'Un Wordle rojo por día.' },

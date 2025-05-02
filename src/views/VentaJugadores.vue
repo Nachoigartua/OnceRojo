@@ -67,6 +67,37 @@
     <div v-else class="text-center">
       <h3>🎮 Ya jugaste hoy</h3>
       <p>Vuelve a jugar en {{ tiempoRestante }}</p>
+      <div class="plantilla-entregada mt-4">
+        <div class="piramide-container">
+          <div
+            v-for="(fila, filaIndex) in piramide"
+            :key="filaIndex"
+            class="fila d-flex justify-content-center mb-3"
+          >
+            <div
+              v-for="(slot, index) in fila"
+              :key="index"
+              class="slot-jugador d-flex align-items-center justify-content-center bg-secondary rounded position-relative"
+              :style="getSlotStyle(filaIndex)"
+            >
+              <span class="posicion-numero">{{ slot.index + 1 }}</span>
+              <div class="info-jugador text-center">
+                <div v-if="plantillaEntregada[slot.index]">
+                  <strong>{{ plantillaEntregada[slot.index].nombre }}</strong><br />
+                  <span>💰 ${{ plantillaEntregada[slot.index].coste }}M</span>
+                </div>
+              </div>
+              <img
+                v-if="plantillaEntregada[slot.index]"
+                :src="getImagenUrl(plantillaEntregada[slot.index].imagen)"
+                :alt="plantillaEntregada[slot.index].nombre"
+                class="img-fluid rounded"
+                style="height: 60px; width: 70px; object-fit: contain;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Vidas restantes -->
@@ -105,6 +136,7 @@ const vidas = ref(5);
 const juegoTerminado = ref(false);
 const juegoJugado = ref(false);
 const tiempoRestante = ref('');
+const plantillaEntregada = ref([]);
 
 const piramide = [
   [{ index: 0 }],
@@ -152,6 +184,10 @@ onMounted(async () => {
   if (jugado) {
     juegoJugado.value = true;
     calcularTiempoRestante();
+    const plantillaGuardada = localStorage.getItem('plantillaEntregada');
+    if (plantillaGuardada) {
+      plantillaEntregada.value = JSON.parse(plantillaGuardada);
+    }
     return;
   }
 
@@ -211,6 +247,8 @@ const verificarOrden = () => {
     resultadoClase.value = 'text-success bg-light';
     juegoTerminado.value = true;
     localStorage.setItem('topVentasJugado', new Date().toISOString().split('T')[0]);
+    localStorage.setItem('plantillaEntregada', JSON.stringify(jugadoresColocados.value));
+    plantillaEntregada.value = [...jugadoresColocados.value];
     calcularTiempoRestante();
     juegoJugado.value = true;
   } else if (vidas.value === 0) {
@@ -218,6 +256,8 @@ const verificarOrden = () => {
     resultadoClase.value = 'text-danger bg-light';
     juegoTerminado.value = true;
     localStorage.setItem('topVentasJugado', new Date().toISOString().split('T')[0]);
+    localStorage.setItem('plantillaEntregada', JSON.stringify(jugadoresColocados.value));
+    plantillaEntregada.value = [...jugadoresColocados.value];
     calcularTiempoRestante();
     juegoJugado.value = true;
   } else {
@@ -355,5 +395,22 @@ const verificarOrden = () => {
 .btn:hover {
   transform: scale(1.1);
   box-shadow: 0 0 15px #ffffff;
+}
+
+.plantilla-entregada {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.plantilla-entregada ul {
+  list-style: none;
+  padding: 0;
+}
+
+.plantilla-entregada li {
+  margin-bottom: 0.5rem;
 }
 </style>
