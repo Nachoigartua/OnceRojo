@@ -64,15 +64,18 @@ const obtenerFechaClave = () => {
 // Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
   const ahora = new Date();
-  const mañana = new Date();
-  mañana.setUTCHours(27, 0, 0, 0); // Mañana a las 00:00 (UTC-3)
-  const diff = mañana - ahora;
+  const ahoraUTC3 = new Date(ahora.toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }));
 
-  const horas = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-  const minutos = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-  const segundos = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+  const siguienteDia = new Date(ahoraUTC3);
+  siguienteDia.setHours(24, 0, 0, 0); // Medianoche del siguiente día
 
-  tiempoRestante.value = `${horas}:${minutos}:${segundos}`;
+  const msRestantes = siguienteDia - ahoraUTC3;
+
+  const horas = Math.floor(msRestantes / (1000 * 60 * 60));
+  const minutos = Math.floor((msRestantes % (1000 * 60 * 60)) / (1000 * 60));
+  const segundos = Math.floor((msRestantes % (1000 * 60)) / 1000);
+
+  tiempoRestante.value = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
 };
 
 // Función para colorear un intento
