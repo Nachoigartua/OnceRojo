@@ -1,7 +1,7 @@
 <template>
   <div class="juegos-container text-white text-center px-3">
     <!-- Título principal -->
-    <h2 class="mb-5 titulo-juegos animate-slide-in">🔴 Elegí tu Minijuego 🔴</h2>
+    <h2 class="mb-5 titulo-juegos animate-slide-in">🔴Elegí tu minijuego🔴</h2>
 
     <!-- Tarjetas de minijuegos -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 w-100 justify-content-center animate-fade-in">
