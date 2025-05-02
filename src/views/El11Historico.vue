@@ -292,7 +292,6 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-    font-size: 1.4rem; /* Aumenta el tamaño base */
 
   background: radial-gradient(circle, #8b0000 0%, #1a0000 100%);
   /* Cambiar overflow para permitir desplazamiento */

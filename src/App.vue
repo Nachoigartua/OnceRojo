@@ -62,7 +62,7 @@ export default {
   }
 }
 html, body, #app {
-  transform: scale(0.6); /* Cambiá el valor a gusto */
+  transform: scale(0.4); /* Cambiá el valor a gusto */
   transform-origin: top left;
 }
 
