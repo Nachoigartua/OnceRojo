@@ -2,6 +2,6 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-  base: '/OnceRojo/', // Reemplaza con el nombre de tu repositorio
+  base: process.env.NODE_ENV === 'production' ? '/OnceRojo/' : '/', // Usa '/OnceRojo/' en producción y '/' en desarrollo
   plugins: [vue()],
 });

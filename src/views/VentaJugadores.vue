@@ -2,11 +2,10 @@
   <div class="jugadores-wrapper d-flex flex-column align-items-center min-vh-100 text-white p-4">
     <h1 class="titulo mb-5 text-center">🏆 Top Ventas de Jugadores</h1>
 
-   <div v-if="yaJugaste" class="text-center">
-<h3 class="text-white">Ya has jugado, espera {{ tiempoRestante }} para volver a jugar.</h3>
-  <p class="text-light">Esta es la pirámide que entregaste:</p>
-</div>
-
+    <div v-if="yaJugaste" class="text-center">
+      <h3 class="text-white">Ya has jugado, espera {{ tiempoRestante }} para volver a jugar.</h3>
+      <p class="text-light">Esta es la pirámide que entregaste:</p>
+    </div>
 
     <div
       class="contenedor-principal d-flex align-items-center w-100"
@@ -34,11 +33,11 @@
             <div class="info-jugador text-center">
               <div v-if="jugadoresColocados[jugador.index]">
                 <strong>{{ jugadoresColocados[jugador.index].nombre }}</strong><br />
-                💰 ${{ jugadoresColocados[jugador.index].coste }}M
+                <span v-if="juegoTerminado">💰 ${{ jugadoresColocados[jugador.index].coste }}M</span>
               </div>
             </div>
             <img
-              v-if="jugadoresColocados[jugador.index]"
+              v-if="jugadoresColocados[jugador.index] && jugadoresColocados[jugador.index].imagen"
               :src="getImagenUrl(jugadoresColocados[jugador.index].imagen)"
               :alt="jugadoresColocados[jugador.index].nombre"
               class="img-fluid rounded"
@@ -57,6 +56,7 @@
         style="width: 200px;"
       >
         <img
+          v-if="jugadorActual.imagen"
           :src="getImagenUrl(jugadorActual.imagen)"
           :alt="jugadorActual.nombre"
           class="img-fluid rounded mb-2"
@@ -102,7 +102,7 @@ const resultadoClase = ref(''); // Clase para el mensaje de resultado (éxito o 
 const vidas = ref(5); // Vidas del usuario
 const yaJugaste = ref(false); // Indica si el usuario ya jugó hoy
 const tiempoRestante = ref('');
-
+const juegoTerminado = ref(false); // Indica si el juego ha terminado
 
 // Pirámide de slots
 const piramide = [
@@ -135,6 +135,7 @@ const calcularTiempoRestante = () => {
   const minutos = Math.floor((msRestantes % (1000 * 60 * 60)) / (1000 * 60));
   tiempoRestante.value = `${horas}h ${minutos}m`;
 };
+
 const getImagenUrl = (path) => `/${path.replace(/^\/+/, '')}`;
 
 // Función para verificar si el usuario ya jugó hoy
@@ -223,12 +224,14 @@ const verificarOrden = () => {
   if (jugadoresColocados.value.every((slot) => slot !== null) && correctos === 10) {
     resultado.value = `✅ ¡Perfecto! Ordenaste correctamente los 10 jugadores.`;
     resultadoClase.value = 'text-success bg-light';
+    juegoTerminado.value = true;
   } else if (vidas.value === 0) {
     resultado.value = `❌ Perdiste. Te quedaste sin vidas.`;
     resultadoClase.value = 'text-danger bg-light';
+    juegoTerminado.value = true;
   } else {
     resultado.value = `Ordenaste correctamente ${correctos}/10 jugadores.`;
-resultadoClase.value = 'text-white bg-light';
+    resultadoClase.value = 'text-white bg-light';
   }
 
   // Guardar el estado del juego
