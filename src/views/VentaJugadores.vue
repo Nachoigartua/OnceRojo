@@ -102,7 +102,15 @@
 
     <!-- Vidas restantes -->
     <div class="vidas mt-4" v-if="!juegoJugado">
-      <p class="text-center">❤️ Vidas restantes: {{ vidas }}</p>
+      <div class="vidas-container d-flex justify-content-center">
+        <img
+          v-for="n in 5"
+          :key="n"
+          :class="['escudo-vida', { 'escudo-perdido': n > vidas, 'temblor': escudosTemblando }]"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Escudo_del_Club_Atl%C3%A9tico_Independiente.svg/973px-Escudo_del_Club_Atl%C3%A9tico_Independiente.svg.png"
+          alt="vida"
+        />
+      </div>
     </div>
 
     <!-- Botón Enviar -->
@@ -137,6 +145,7 @@ const juegoTerminado = ref(false);
 const juegoJugado = ref(false);
 const tiempoRestante = ref('');
 const plantillaEntregada = ref([]);
+const escudosTemblando = ref(false);
 
 const piramide = [
   [{ index: 0 }],
@@ -154,24 +163,17 @@ const getSlotStyle = (filaIndex) => {
   };
 };
 
-const getImagenUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/,'')}`;
-
-const shuffle = (array) => {
-  let m = array.length, i;
-  while (m) {
-    i = Math.floor(Math.random() * m--);
-    [array[m], array[i]] = [array[i], array[m]];
-  }
-  return array;
+const getImagenUrl = (path) => {
+  const url = `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`;
+  console.debug('🔍 Image URL:', url); // Debugging image URL
+  return url;
 };
 
 function calcularTiempoRestante() {
   const ahora = new Date();
-  const ahoraUTC = new Date(ahora.getTime() + ahora.getTimezoneOffset() * 60000);
-  const argentina = new Date(ahoraUTC.getTime() - 3 * 60 * 60000);
-  const siguiente = new Date(argentina);
+  const siguiente = new Date();
   siguiente.setHours(24, 0, 0, 0);
-  const diffMs = siguiente - argentina;
+  const diffMs = siguiente - ahora;
   const h = Math.floor(diffMs / (1000 * 60 * 60));
   const m = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
   tiempoRestante.value = `${h}h ${m}m`;
@@ -195,10 +197,16 @@ onMounted(async () => {
     const data = await fetch(`${import.meta.env.BASE_URL}jugadores_ventas.json`).then((res) =>
       res.json()
     );
-    const jugadoresAleatorios = shuffle(data).slice(0, 10);
-    jugadoresReferencia.value = [...jugadoresAleatorios].sort((a, b) => b.coste - a.coste);
-    jugadores.value = shuffle(jugadoresAleatorios);
-    jugadorActual.value = jugadores.value.shift();
+    console.debug('🔍 JSON Data:', data); // Debugging JSON data
+
+   if (data[hoy]) {
+  jugadoresReferencia.value = data[hoy][0].jugadores;
+  jugadores.value = [...jugadoresReferencia.value];
+  jugadorActual.value = jugadores.value.shift(); // 👉 Esto faltaba
+  console.debug('🔍 Players for today:', jugadores.value);
+} else {
+      console.error('❌ No hay datos para la fecha actual:', hoy);
+    }
   } catch (error) {
     console.error('❌ Error al cargar jugadores:', error);
   }
@@ -231,6 +239,16 @@ const soltarEnSlot = (destinoIndex) => {
   }
 };
 
+const activarTemblor = () => {
+  escudosTemblando.value = false;
+  void document.body.offsetWidth; // Trigger reflow
+  escudosTemblando.value = true;
+
+  setTimeout(() => {
+    escudosTemblando.value = false;
+  }, 500);
+};
+
 const verificarOrden = () => {
   let correctos = 0;
 
@@ -241,6 +259,7 @@ const verificarOrden = () => {
   });
 
   vidas.value--;
+  activarTemblor(); // Trigger animation when lives are reduced
 
   if (jugadoresColocados.value.every((slot) => slot !== null) && correctos === 10) {
     resultado.value = `✅ ¡Perfecto! Ordenaste correctamente los 10 jugadores.`;
@@ -412,5 +431,30 @@ const verificarOrden = () => {
 
 .plantilla-entregada li {
   margin-bottom: 0.5rem;
+}
+
+.escudo-vida {
+  width: 20px;
+  height: 20px;
+  margin: 0 3px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.escudo-perdido {
+  opacity: 0.2;
+}
+
+@keyframes temblor {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  60% { transform: translate(-2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.temblor {
+  animation: temblor 0.5s ease-in-out;
 }
 </style>

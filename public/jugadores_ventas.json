@@ -1,91 +1,66 @@
-[
-  {"nombre": "Abraham", "coste": 1.2, "imagen": "/VentaJugadores/Abraham.jpg"},
-  {"nombre": "Acuña", "coste": 3.5, "imagen": "/VentaJugadores/Acuña.jpg"},
-  {"nombre": "Aguilera", "coste": 0.9, "imagen": "/VentaJugadores/Aguilera.jpg"},
-  {"nombre": "Agüero", "coste": 25.0, "imagen": "/VentaJugadores/Aguero.jpg"},
-  {"nombre": "Albertengo", "coste": 2.3, "imagen": "/VentaJugadores/LucasAlbertengo.jpg"},
-  {"nombre": "Aquino", "coste": 0.7, "imagen": "/VentaJugadores/Aquino.jpg"},
-  {"nombre": "Armenteros", "coste": 1.1, "imagen": "/VentaJugadores/Armenteros.jpg"},
-  {"nombre": "Atencio", "coste": 0.6, "imagen": "/VentaJugadores/Atencio.jpg"},
-  {"nombre": "Bacchia", "coste": 0.4, "imagen": "/VentaJugadores/Bacchia.jpg"},
-  {"nombre": "Barboza", "coste": 1.3, "imagen": "/VentaJugadores/Barboza.jpg"},
-  {"nombre": "Barco", "coste": 15.0, "imagen": "/VentaJugadores/Barco.jpg"},
-  {"nombre": "Barreto", "coste": 0.8, "imagen": "/VentaJugadores/Barreto.jpg"},
-  {"nombre": "Benegas", "coste": 0.5, "imagen": "/VentaJugadores/Benegas.jpg"},
-  {"nombre": "Benítez", "coste": 4.2, "imagen": "/VentaJugadores/Benitez.jpg"},
-  {"nombre": "Bertoni", "coste": 2.5, "imagen": "/VentaJugadores/Bertoni.jpg"},
-  {"nombre": "Biglia", "coste": 6.0, "imagen": "/VentaJugadores/Biglia.jpg"},
-  {"nombre": "Brian Martínez", "coste": 1.0, "imagen": "/VentaJugadores/BrianMartinez.jpg"},
-  {"nombre": "Brian Romero", "coste": 1.6, "imagen": "/VentaJugadores/BrianRomero.jpg"},
-  {"nombre": "Bustos", "coste": 2.2, "imagen": "/VentaJugadores/Bustos.jpg"},
-  {"nombre": "Cagna", "coste": 1.8, "imagen": "/VentaJugadores/Cagna.jpg"},
-  {"nombre": "Calderón", "coste": 1.4, "imagen": "/VentaJugadores/Calderon.jpg"},
-  {"nombre": "Calello", "coste": 0.91, "imagen": "/VentaJugadores/Calello.jpg"},
-  {"nombre": "Chávez", "coste": 1.11, "imagen": "/VentaJugadores/Chavez.jpg"},
-  {"nombre": "Costa", "coste": 0.71, "imagen": "/VentaJugadores/Costa.jpg"},
-  {"nombre": "Cristian Díaz", "coste": 1.21, "imagen": "/VentaJugadores/CristianDiaz.jpg"},
-  {"nombre": "Cuesta", "coste": 3.0, "imagen": "/VentaJugadores/Cuesta.jpg"},
-  {"nombre": "Denis", "coste": 4.0, "imagen": "/VentaJugadores/Denis.jpg"},
-  {"nombre": "Diego Rodríguez", "coste": 1.31, "imagen": "/VentaJugadores/DiegoRodriguez.jpg"},
-  {"nombre": "Domínguez", "coste": 2.7, "imagen": "/VentaJugadores/Dominguez.jpg"},
-  {"nombre": "Eluchans", "coste": 0.92, "imagen": "/VentaJugadores/Eluchans.jpg"},
-  {"nombre": "Escudero", "coste": 0.81, "imagen": "/VentaJugadores/Escudero.jpg"},
-  {"nombre": "Federico Insúa", "coste": 3.3, "imagen": "/VentaJugadores/FedericoInsua.jpg"},
-  {"nombre": "Figal", "coste": 2.4, "imagen": "/VentaJugadores/Figal.jpg"},
-  {"nombre": "Formal", "coste": 0.72, "imagen": "/VentaJugadores/Formal.jpg"},
-  {"nombre": "Franco", "coste": 2.0, "imagen": "/VentaJugadores/Franco.jpg"},
-  {"nombre": "Frutos", "coste": 1.61, "imagen": "/VentaJugadores/Frutos.jpg"},
-  {"nombre": "Gabriel Calderón", "coste": 1.22, "imagen": "/VentaJugadores/GabrielCalderon.jpg"},
-  {"nombre": "Gaibor", "coste": 3.8, "imagen": "/VentaJugadores/Gaibor.jpg"},
-  {"nombre": "Gandín", "coste": 0.93, "imagen": "/VentaJugadores/Gandin.jpg"},
-  {"nombre": "Gastón Togni", "coste": 1.12, "imagen": "/VentaJugadores/GastonTogni.jpg"},
-  {"nombre": "Gigliotti", "coste": 2.9, "imagen": "/VentaJugadores/Gigliotti.jpg"},
-  {"nombre": "Gómez", "coste": 1.32, "imagen": "/VentaJugadores/Gomez.jpg"},
-  {"nombre": "Gonzales", "coste": 1.01, "imagen": "/VentaJugadores/Gonzales.jpg"},
-  {"nombre": "Grisales", "coste": 1.5, "imagen": "/VentaJugadores/Grisales.jpg"},
-  {"nombre": "Isla", "coste": 2.1, "imagen": "/VentaJugadores/Isla.jpg"},
-  {"nombre": "Jonathan Menéndez", "coste": 1.7, "imagen": "/VentaJugadores/JonathanMenendez.jpg"},
-  {"nombre": "Leandro Fernández", "coste": 2.6, "imagen": "/VentaJugadores/LeandroFernandez.jpg"},
-  {"nombre": "Leyenda", "coste": 0.51, "imagen": "/VentaJugadores/Leyenda.jpg"},
-  {"nombre": "Lucas González", "coste": 0.73, "imagen": "/VentaJugadores/LucasGonzales.jpg"},
-  {"nombre": "Lucas Romero", "coste": 4.51, "imagen": "/VentaJugadores/LucasRomero.jpg"},
-  {"nombre": "Lucero", "coste": 1.41, "imagen": "/VentaJugadores/Lucero.jpg"},
-  {"nombre": "Machín", "coste": 0.82, "imagen": "/VentaJugadores/Machin.jpg"},
-  {"nombre": "Mancuello", "coste": 2.8, "imagen": "/VentaJugadores/Mancuello.jpg"},
-  {"nombre": "Marioni", "coste": 1.23, "imagen": "/VentaJugadores/Marioni.jpg"},
-  {"nombre": "Martínez", "coste": 1.33, "imagen": "/VentaJugadores/Martinez.jpg"},
-  {"nombre": "Matheu", "coste": 0.94, "imagen": "/VentaJugadores/Matheu.jpg"},
-  {"nombre": "Messiniti", "coste": 0.61, "imagen": "/VentaJugadores/Messiniti.jpg"},
-  {"nombre": "Meza", "coste": 2.91, "imagen": "/VentaJugadores/Meza.jpg"},
-  {"nombre": "Milito", "coste": 3.4, "imagen": "/VentaJugadores/Milito.jpg"},
-  {"nombre": "Montenegro", "coste": 2.11, "imagen": "/VentaJugadores/Montenegro.jpg"},
-  {"nombre": "Morales", "coste": 0.52, "imagen": "/VentaJugadores/Morales.jpg"},
-  {"nombre": "Moreno", "coste": 0.83, "imagen": "/VentaJugadores/Moreno.jpg"},
-  {"nombre": "Navarro", "coste": 1.02, "imagen": "/VentaJugadores/Navarro.jpg"},
-  {"nombre": "Orteman", "coste": 1.34, "imagen": "/VentaJugadores/Orteman.jpg"},
-  {"nombre": "Palacios", "coste": 1.24, "imagen": "/VentaJugadores/Palacios.jpg"},
-  {"nombre": "Pato Rodríguez", "coste": 2.01, "imagen": "/VentaJugadores/PatoRodriguez.jpg"},
-  {"nombre": "Percudani", "coste": 1.03, "imagen": "/VentaJugadores/Percudani.jpg"},
-  {"nombre": "Pisano", "coste": 0.95, "imagen": "/VentaJugadores/Pisano.jpg"},
-  {"nombre": "Pizzini", "coste": 1.13, "imagen": "/VentaJugadores/Pizzini.jpg"},
-  {"nombre": "Pozzo", "coste": 0.74, "imagen": "/VentaJugadores/Pozzo.jpg"},
-  {"nombre": "Pusineri", "coste": 1.25, "imagen": "/VentaJugadores/Pusineri.jpg"},
-  {"nombre": "Rambert", "coste": 0.96, "imagen": "/VentaJugadores/Rambert.jpg"},
-  {"nombre": "Rigoni", "coste": 2.51, "imagen": "/VentaJugadores/Rigoni.jpg"},
-  {"nombre": "Rodríguez", "coste": 1.62, "imagen": "/VentaJugadores/Rodriguez.jpg"},
-  {"nombre": "Silvio Romero", "coste": 3.71, "imagen": "/VentaJugadores/SilvioRomero.jpg"},
-  {"nombre": "Sosa", "coste": 1.35, "imagen": "/VentaJugadores/Sosa.jpg"},
-  {"nombre": "Tagliafico", "coste": 7.0, "imagen": "/VentaJugadores/Tagliafico.jpg"},
-  {"nombre": "Togni", "coste": 0.62, "imagen": "/VentaJugadores/Togni.jpg"},
-  {"nombre": "Toledo", "coste": 0.84, "imagen": "/VentaJugadores/Toledo.jpg"},
-  {"nombre": "Turdo", "coste": 0.75, "imagen": "/VentaJugadores/Turdo.jpg"},
-  {"nombre": "Ustari", "coste": 2.02, "imagen": "/VentaJugadores/Ustari.jpg"},
-  {"nombre": "Vallejo", "coste": 0.76, "imagen": "/VentaJugadores/Vallejo.jpg"},
-  {"nombre": "Velasco", "coste": 4.52, "imagen": "/VentaJugadores/Velasco.jpg"},
-  {"nombre": "Vera", "coste": 1.14, "imagen": "/VentaJugadores/Vera.jpg"},
-  {"nombre": "Verón", "coste": 1.42, "imagen": "/VentaJugadores/Veron.jpg"},
-  {"nombre": "Vidal", "coste": 0.63, "imagen": "/VentaJugadores/Vidal.jpg"},
-  {"nombre": "Villafañez", "coste": 0.97, "imagen": "/VentaJugadores/Villafañez.jpg"},
-  {"nombre": "Vuoso", "coste": 1.36, "imagen": "/VentaJugadores/Vuoso.jpg"},
-  {"nombre": "Zapata", "coste": 0.85, "imagen": "/VentaJugadores/Zapata.jpg"}
-]
+{
+  "2025-05-03": [
+    {
+      "jugadores": [
+        { "nombre": "Cristian Díaz", "coste": 2, "imagen": "/VentaJugadores/CristianDiaz.jpg" },
+        { "nombre": "Sergio Agüero", "coste": 23, "imagen": "/VentaJugadores/Aguero.jpg" },
+        { "nombre": "Gustavo López", "coste": 2.2, "imagen": "/VentaJugadores/Lopez.jpg" },
+        { "nombre": "Alan Velasco", "coste": 6.4, "imagen": "/VentaJugadores/Velasco.jpg" },
+        { "nombre": "Mario Turdó", "coste": 3.6, "imagen": "/VentaJugadores/Turdo.jpg" },
+        { "nombre": "David Abraham", "coste": 2.7, "imagen": "/VentaJugadores/Abraham.jpg" },
+        { "nombre": "Daniel Montenegro", "coste": 3.7, "imagen": "/VentaJugadores/Montenegro.jpg" },
+        { "nombre": "Nicolás Tagliafico", "coste": 4, "imagen": "/VentaJugadores/Tagliafico.jpg" },
+        { "nombre": "Matías Vuoso", "coste": 7, "imagen": "/VentaJugadores/Vuoso.jpg" },
+        { "nombre": "Alexander Barboza", "coste": 1, "imagen": "/VentaJugadores/Barboza.jpg" }
+      ]
+    }
+  ],
+  "2025-05-09": [
+    {
+      "jugadores": [
+        { "nombre": "Roberto Acuña", "coste": 4.8, "imagen": "/VentaJugadores/Acuña.jpg" },
+        { "nombre": "Sebastián Palacios", "coste": 1.5, "imagen": "/VentaJugadores/Palacios.jpg" },
+        { "nombre": "Lucas Biglia", "coste": 3.0, "imagen": "/VentaJugadores/Biglia.jpg" },
+        { "nombre": "Cecilio Domínguez", "coste": 2.2, "imagen": "/VentaJugadores/Cecilio Domínguez.jpg" },
+        { "nombre": "Emmanuel Gigliotti", "coste": 3.2, "imagen": "/VentaJugadores/Gigliotti.jpg" },
+        { "nombre": "Ángel Morales", "coste": 4, "imagen": "/VentaJugadores/Morales.jpg" },
+        { "nombre": "Diego Forlán", "coste": 11, "imagen": "/VentaJugadores/Forlan.jpg" },
+        { "nombre": "Carlos Matheu", "coste": 2, "imagen": "/VentaJugadores/Matheu.jpg" },
+        { "nombre": "Ismael Sosa", "coste": 3.5, "imagen": "/VentaJugadores/Sosa.jpg" },
+        { "nombre": "Sebastián Rambert", "coste": 2.1, "imagen": "/VentaJugadores/Rambert.jpg" }
+      ]
+    }
+  ],
+  "2025-05-04": [
+    {
+      "jugadores": [
+        { "nombre": "Maximiliano Meza", "coste": 13.1, "imagen": "/VentaJugadores/Meza.jpg" },
+        { "nombre": "Adrián Calello", "coste": 2.2, "imagen": "/VentaJugadores/Calello.jpg" },
+        { "nombre": "Gabriel Milito", "coste": 3.5, "imagen": "/VentaJugadores/Milito.jpg" },
+        { "nombre": "Federico Mancuello", "coste": 2.7, "imagen": "/VentaJugadores/Mancuello.jpg" },
+        { "nombre": "José Luis Calderón", "coste": 3.8, "imagen": "/VentaJugadores/Calderon.jpg" },
+        { "nombre": "Nicolás Frutos", "coste": 2.5, "imagen": "/VentaJugadores/Frutos.jpg" },
+        { "nombre": "Rodrigo Atencio", "coste": 1.9, "imagen": "/VentaJugadores/Atencio.jpg" },
+        { "nombre": "Federico Insúa", "coste": 2.4, "imagen": "/VentaJugadores/Insua.jpg" },
+        { "nombre": "Alan Franco", "coste": 2.9, "imagen": "/VentaJugadores/Alan Franco.jpg" },
+        { "nombre": "Bruno Marioni", "coste": 3.6, "imagen": "/VentaJugadores/Marioni.jpg" }
+      ]
+    }
+  ],
+  "2025-05-05": [
+    {
+      "jugadores": [
+        { "nombre": "Germán Denis", "coste": 7.5, "imagen": "/VentaJugadores/Denis.jpg" },
+        { "nombre": "Pato Rodríguez", "coste": 1.6, "imagen": "/VentaJugadores/Rodriguez.jpg" },
+        { "nombre": "Óscar Ustari", "coste": 6, "imagen": "/VentaJugadores/Ustari.jpg" },
+        { "nombre": "Juan Martín Lucero", "coste": 1.3, "imagen": "/VentaJugadores/Lucero.jpg" },
+        { "nombre": "Victor Cuesta", "coste": 2.6, "imagen": "/VentaJugadores/Cuesta.jpg" },
+        { "nombre": "Ayrton Costa", "coste": 2.4, "imagen": "/VentaJugadores/Costa.jpg" },
+        { "nombre": "Esequiel Barco", "coste": 12, "imagen": "/VentaJugadores/Barco.jpg" },
+        { "nombre": "Nicolás Figal", "coste": 2.1, "imagen": "/VentaJugadores/Figal.jpg" },
+        { "nombre": "Sergio Barreto", "coste": 2.2, "imagen": "/VentaJugadores/Barreto.jpg" },
+        { "nombre": "Francisco Pizzini", "coste": 1, "imagen": "/VentaJugadores/Pizzini.jpg" }
+      ]
+    }
+  ]
+}

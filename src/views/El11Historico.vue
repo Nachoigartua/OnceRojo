@@ -70,6 +70,7 @@ const nombresAdivinados = ref({});
 const inputNombre = ref('');
 const tiempo = ref(60);
 const juegoFinalizado = ref(false);
+const fase = ref('formacion'); // Add this line to define the 'fase' property
 
 const pizarra = ref([]);
 const mensaje = ref('');
