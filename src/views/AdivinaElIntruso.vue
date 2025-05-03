@@ -6,7 +6,7 @@
     <div v-if="yaJugado">
       <p class="fs-5">Ya has respondido hoy.</p>
       <h3 class="reloj">Vuelve a intentarlo en: {{ tiempoRestante }}</h3>
-      <p class="mb-4 fs-5 animate-fade-in">{{ preguntaGuardada }}</p> <!-- Show stored question -->
+      <p class="mb-4 fs-5 animate-fade-in">Resultado: {{ mensajeResultado }}</p>
       <div class="row justify-content-center mt-4">
         <div
           class="col-10 col-md-4 mb-4"
@@ -28,8 +28,7 @@
     </div>
 
     <!-- Juego principal -->
-    <div v-else-if="opciones.length">
-      <p class="mb-4 fs-5 animate-fade-in">{{ pregunta }}</p> <!-- Show current question -->
+    <div v-else-if="preguntaActual < 3">
       <div class="row justify-content-center">
         <div
           class="col-10 col-md-4 mb-4"
@@ -53,29 +52,38 @@
         <p class="fs-5" :class="esCorrecta ? 'text-success' : 'text-danger'">
           {{ mensajeResultado }}
         </p>
+       
+        <button v-if="preguntaActual < 2" class="btn btn-primary mt-3" @click="siguientePregunta">
+          Siguiente Pregunta
+        </button>
       </div>
     </div>
 
-    <!-- Mensaje de "No hay desafío cargado" -->
-    <div v-else>
-      <p class="text-warning">No hay desafío cargado para hoy.</p>
+    <!-- Mensaje final -->
+    <div v-else-if="preguntaActual >= 3">
+      <p class="fs-4" :class="correctas === 3 ? 'text-success' : 'text-danger'">
+        {{ mensajeResultado }}
+      </p>
+      <p class="fs-5 text-warning">Vuelve a jugar en: {{ tiempoRestante }}</p>
     </div>
   </div>
 </template>
 
-<<script setup>
+<script setup>
 import { ref, onMounted } from 'vue';
 
-const opciones = ref([]); // Opciones del día
-const intruso = ref(''); // El intruso (respuesta correcta)
-const pregunta = ref('¿Quién no jugó en el Rey de Copas?');
-const preguntaGuardada = ref('');
+const preguntas = ref([]); // Preguntas del día
+const opciones = ref([]); // Opciones actuales
+const intruso = ref(''); // Intruso actual
+const preguntaActual = ref(0); // Índice de la pregunta actual
 const respuestaSeleccionada = ref(false);
 const esCorrecta = ref(false);
 const mensajeResultado = ref('');
 const yaJugado = ref(false);
 const tiempoRestante = ref('');
 const respuestaGuardada = ref('');
+const preguntasGuardadas = ref([]);
+const correctas = ref(0); // Contador de respuestas correctas
 
 // Obtener fecha clave en formato YYYY-MM-DD (con ajuste a UTC-3)
 const obtenerFechaClave = () => {
@@ -106,11 +114,54 @@ const verificarRespuesta = (opcion) => {
     ? '✅ ¡Correcto!'
     : `❌ Incorrecto. El intruso era: ${intruso.value}`;
 
+  if (esCorrecta.value) correctas.value++; // Incrementar contador si es correcta
+
   const clave = obtenerFechaClave();
-  localStorage.setItem('respuesta-' + clave, 'true');
-  localStorage.setItem('seleccionada-' + clave, opcion);
-  localStorage.setItem('correcta-' + clave, intruso.value);
-  localStorage.setItem('pregunta-' + clave, pregunta.value);
+  preguntasGuardadas.value.push(preguntas.value[preguntaActual.value]);
+  localStorage.setItem('preguntas-guardadas-' + clave, JSON.stringify(preguntasGuardadas.value));
+
+  // Llamar al método para mostrar el mensaje final si es la última pregunta
+  if (preguntaActual.value === 2) {
+    mostrarMensajeFinal(opcion, clave);
+  }
+};
+
+// Mostrar mensaje final si es la última pregunta
+const mostrarMensajeFinal = (opcion, clave) => {
+  if (correctas.value === 3) {
+    mensajeResultado.value = "🎉 Felicidades, acertaste 3 de 3 preguntas. ¡Ganaste!";
+  } else {
+    mensajeResultado.value = `❌ Fallaste, Respondiste correctamente ${correctas.value} de 3 preguntas.`;
+  }
+  localStorage.setItem('respuesta-' + clave, 'true'); // Marcar como jugado
+  localStorage.setItem('seleccionada-' + clave, opcion); // Guardar la respuesta seleccionada
+  localStorage.setItem('correcta-' + clave, intruso.value); // Guardar la respuesta correcta
+};
+
+// Pasar a la siguiente pregunta
+const siguientePregunta = () => {
+  if (preguntaActual.value < 2) {
+    preguntaActual.value++;
+    cargarPreguntaActual();
+    respuestaSeleccionada.value = false;
+  } else {
+    preguntaActual.value++; // Incrementar a 3 para activar el mensaje final
+    respuestaSeleccionada.value = false; // Asegurarse de que no quede seleccionada
+  }
+};
+
+// Función para mezclar las opciones de forma aleatoria
+const mezclarOpciones = (array) => {
+  return array
+    .map((item) => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item);
+};
+
+// Cargar la pregunta actual
+const cargarPreguntaActual = () => {
+  opciones.value = mezclarOpciones(preguntas.value[preguntaActual.value].opciones);
+  intruso.value = preguntas.value[preguntaActual.value].intruso;
 };
 
 // Cargar el desafío del día desde el JSON
@@ -123,15 +174,21 @@ const cargarDatosDelDia = async () => {
     const entradaHoy = data[clave];
 
     if (entradaHoy) {
-      opciones.value = entradaHoy.opciones;
-      intruso.value = entradaHoy.intruso;
-      pregunta.value = entradaHoy.pregunta || pregunta.value;
+      preguntas.value = entradaHoy;
+      cargarPreguntaActual();
     } else {
       console.warn('No hay desafío cargado para hoy.');
     }
   } catch (error) {
     console.error('Error cargando el JSON:', error);
   }
+};
+
+// Función para formatear los resultados
+const formatearResultados = (preguntas) => {
+  return preguntas
+    .map((pregunta, index) => `Pregunta ${index + 1}: ${pregunta.intruso}`)
+    .join(', ');
 };
 
 // Al montar el componente
@@ -145,10 +202,13 @@ onMounted(async () => {
   if (yaJugado.value) {
     respuestaGuardada.value = localStorage.getItem('seleccionada-' + clave) || '';
     intruso.value = localStorage.getItem('correcta-' + clave) || '';
-    preguntaGuardada.value = localStorage.getItem('pregunta-' + clave) || pregunta.value;
+    preguntasGuardadas.value = JSON.parse(localStorage.getItem('preguntas-guardadas-' + clave)) || [];
+    correctas.value = preguntasGuardadas.value.filter(p => p.intruso === intruso.value).length; // Calcular correctas
+    mostrarMensajeFinal(respuestaGuardada.value, clave); // Usar el método modularizado
     calcularTiempoRestante();
     setInterval(calcularTiempoRestante, 1000);
-    respuestaSeleccionada.value = true; // mostrar resultado en el template
+    respuestaSeleccionada.value = true; // Mostrar resultado en el template
+    preguntaActual.value = 3; // Mostrar el mensaje final directamente
   }
 });
 

@@ -1,43 +1,42 @@
 <template>
   <div
     class="adivina-jugador-wrapper d-flex flex-column align-items-center justify-content-center text-white min-vh-100"
-    style="background: linear-gradient(to bottom, #800000, #e70013)"
+    style="background: linear-gradient(to bottom, #4b0000, #800000, #e70013)"
   >
     <!-- Si ya jugó, se muestra solo el estado de las pistas, vidas y el reloj -->
-  <div v-if="yaJugado">
-  <h2 class="mb-4">⚽ Adivina el Jugador</h2>
+    <div v-if="yaJugado">
+      <h2 class="mb-4 animate-title">⚽ Adivina el Jugador</h2>
 
-  <div class="pista-container mb-4 d-flex flex-wrap justify-content-center">
-    <div class="pista-text me-2 mb-2" v-for="(pista, index) in pistasMostradas" :key="index">
-      {{ pista }}
+      <div class="pista-container mb-4 d-flex flex-wrap justify-content-center">
+        <div class="pista-text me-2 mb-2" v-for="(pista, index) in pistasMostradas" :key="index">
+          {{ pista }}
+        </div>
+      </div>
+
+      <div class="vidas mb-3 d-flex justify-content-center">
+        <img
+          v-for="n in 5"
+          :key="n"
+          :class="['escudo-vida', { 'escudo-perdido': n > vidas, 'temblor': escudosTemblando }]"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Escudo_del_Club_Atl%C3%A9tico_Independiente.svg/973px-Escudo_del_Club_Atl%C3%A9tico_Independiente.svg.png"
+          alt="vida"
+        />
+      </div>
+
+      <div class="resultado-container mt-4">
+        <p v-if="esCorrecta" class="text-success">🎉 ¡CORRECTO! Era {{ jugadorActual?.nombre }}</p>
+        <p v-else class="text-danger">❌ INCORRECTO. Era {{ jugadorActual?.nombre }}</p>
+      </div>
+
+      <div class="text-center mt-3">
+        <p class="fs-5">Ya respondiste hoy. Vuelve en:</p>
+        <h3 class="reloj">{{ tiempoRestante }}</h3>
+      </div>
     </div>
-  </div>
-
-  <div class="vidas mb-3 d-flex justify-content-center">
-    <img
-      v-for="n in 5"
-      :key="n"
-      :class="['escudo-vida', { 'escudo-perdido': n > vidas, 'temblor': escudosTemblando }]"
-      src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Escudo_del_Club_Atl%C3%A9tico_Independiente.svg/973px-Escudo_del_Club_Atl%C3%A9tico_Independiente.svg.png"
-      alt="vida"
-    />
-  </div>
-
-  <div class="resultado-container mt-4">
-    <p v-if="esCorrecta" class="text-success">🎉 ¡CORRECTO! Era {{ jugadorActual?.nombre }}</p>
-    <p v-else class="text-danger">❌ INCORRECTO. Era {{ jugadorActual?.nombre }}</p>
-  </div>
-
-  <div class="text-center mt-3">
-    <p class="fs-5">Ya respondiste hoy. Vuelve en:</p>
-    <h3 class="reloj">{{ tiempoRestante }}</h3>
-  </div>
-</div>
-
 
     <!-- Juego principal -->
     <div v-else>
-      <h2 class="mb-4">⚽ Adivina el Jugador</h2>
+      <h2 class="mb-4 animate-title">⚽ Adivina el Jugador</h2>
 
       <div class="pista-container mb-4 d-flex flex-wrap justify-content-center">
         <div class="pista-text me-2 mb-2" v-for="(pista, index) in pistasMostradas" :key="index">
@@ -56,7 +55,7 @@
       </div>
 
       <div class="acciones-container d-flex flex-column align-items-center">
-        <button class="btn btn-light mb-3" @click="mostrarPista">Siguiente Pista</button>
+        <button class="btn btn-light mb-3 animate-button" @click="mostrarPista">Siguiente Pista</button>
         <div class="autocomplete-container position-relative w-100">
           <input
             type="text"
@@ -79,7 +78,7 @@
             </li>
           </ul>
         </div>
-        <button class="btn btn-success" @click="verificarRespuesta" :disabled="!respuesta">Adivinar</button>
+        <button class="btn btn-success animate-button" @click="verificarRespuesta" :disabled="!respuesta">Adivinar</button>
       </div>
 
       <div v-if="resultado" class="resultado-container mt-4">
@@ -181,7 +180,7 @@ const cargarJugadorDelDia = async () => {
   }
 };
 
-// Mostrar pista
+// Mostrar pista con flechitas
 const mostrarPista = () => {
   if (vidas.value <= 0) {
     activarTemblor();
@@ -193,7 +192,11 @@ const mostrarPista = () => {
   if (pistaIndex.value < clubes.length - 1) {
     pistaIndex.value++;
     const club = clubes[pistaIndex.value];
-    pistasMostradas.value.push(club.toLowerCase() === 'retirado' ? 'Y luego se retiró 🧓' : club);
+    pistasMostradas.value.push(
+      pistaIndex.value === 0
+        ? club
+        : `➡️ ${club.toLowerCase() === 'retirado' ? 'Y luego se retiró 🧓' : club}`
+    );
   } else if (!pistasMostradas.value.includes('🔚 No jugó en más clubes.')) {
     pistasMostradas.value.push('🔚 No jugó en más clubes.');
   }
@@ -276,10 +279,11 @@ onMounted(() => {
 <style scoped>
 .adivina-jugador-wrapper {
   text-align: center;
+  animation: fadeIn 1s ease-in-out;
 }
 
 .pista-container {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: bold;
   display: flex;
   flex-wrap: wrap;
@@ -293,6 +297,8 @@ onMounted(() => {
   color: white;
   margin: 0.25rem;
   white-space: nowrap;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  animation: pulse 1.5s infinite;
 }
 
 .autocomplete-container {
@@ -309,10 +315,10 @@ onMounted(() => {
 }
 
 .reloj {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #fff;
-  text-shadow: 0 0 5px red;
+  text-shadow: 0 0 10px red, 0 0 20px #ff0000;
 }
 
 .autocomplete-list .list-group-item {
@@ -355,5 +361,50 @@ onMounted(() => {
 
 .temblor {
   animation: temblor 0.5s ease-in-out;
+}
+
+.animate-title {
+  animation: slideIn 1s ease-in-out;
+}
+
+.animate-button {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.animate-button:hover {
+  transform: scale(1.1);
+  background-color: #ff4d4d;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>
