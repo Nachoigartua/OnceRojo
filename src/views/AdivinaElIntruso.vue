@@ -1,6 +1,7 @@
 <template>
   <div class="intruso-container text-white text-center px-3">
-    <h2 class="titulo-juego mb-5 animate-slide-in">🔎 Adiviná el Intruso 🔎</h2>
+    <h2 class="titulo-juego mb-2 animate-slide-in">🔎 Adiviná el Intruso 🔎</h2>
+    <h3 class="subtitulo-juego mb-5">¿Quién no jugó en Independiente?</h3>
 
     <!-- Mensaje de "Ya respondiste hoy" -->
     <div v-if="yaJugado">
@@ -122,20 +123,20 @@ const verificarRespuesta = (opcion) => {
 
   // Llamar al método para mostrar el mensaje final si es la última pregunta
   if (preguntaActual.value === 2) {
-    mostrarMensajeFinal(opcion, clave);
+    mostrarMensajeFinal(clave); // Remove `opcion` as it's not needed here
   }
 };
 
 // Mostrar mensaje final si es la última pregunta
-const mostrarMensajeFinal = (opcion, clave) => {
+const mostrarMensajeFinal = (clave) => {
   if (correctas.value === 3) {
     mensajeResultado.value = "🎉 Felicidades, acertaste 3 de 3 preguntas. ¡Ganaste!";
   } else {
     mensajeResultado.value = `❌ Fallaste, Respondiste correctamente ${correctas.value} de 3 preguntas.`;
   }
   localStorage.setItem('respuesta-' + clave, 'true'); // Marcar como jugado
-  localStorage.setItem('seleccionada-' + clave, opcion); // Guardar la respuesta seleccionada
-  localStorage.setItem('correcta-' + clave, intruso.value); // Guardar la respuesta correcta
+  localStorage.setItem('correctas-' + clave, correctas.value); // Guardar el número de correctas
+  localStorage.setItem('preguntas-guardadas-' + clave, JSON.stringify(preguntasGuardadas.value)); // Guardar preguntas
 };
 
 // Pasar a la siguiente pregunta
@@ -203,8 +204,8 @@ onMounted(async () => {
     respuestaGuardada.value = localStorage.getItem('seleccionada-' + clave) || '';
     intruso.value = localStorage.getItem('correcta-' + clave) || '';
     preguntasGuardadas.value = JSON.parse(localStorage.getItem('preguntas-guardadas-' + clave)) || [];
-    correctas.value = preguntasGuardadas.value.filter(p => p.intruso === intruso.value).length; // Calcular correctas
-    mostrarMensajeFinal(respuestaGuardada.value, clave); // Usar el método modularizado
+    correctas.value = parseInt(localStorage.getItem('correctas-' + clave), 10) || 0; // Load correctas from storage
+    mostrarMensajeFinal(clave); // Use the updated method
     calcularTiempoRestante();
     setInterval(calcularTiempoRestante, 1000);
     respuestaSeleccionada.value = true; // Mostrar resultado en el template
@@ -233,6 +234,12 @@ onMounted(async () => {
   font-size: 2.5rem;
   color: #ffffff;
   text-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+}
+
+.subtitulo-juego {
+  font-size: 1.8rem;
+  color: #ffcccc;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 /* Botones con bordes épicos */
