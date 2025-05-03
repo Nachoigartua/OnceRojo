@@ -76,18 +76,16 @@ const ultimaRespuesta = ref('');
 const errorCarga = ref(false);
 let intervalo = null;
 
-// Función para obtener la fecha clave (YYYY-MM-DD)
 const obtenerFechaClave = () => {
   const ahora = new Date();
-  ahora.setUTCHours(3, 0, 0, 0); // Ajuste para UTC-3
+  ahora.setUTCHours(3, 0, 0, 0); // UTC-3
   return ahora.toISOString().slice(0, 10);
 };
 
-// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
   const ahora = new Date();
   const mañana = new Date();
-  mañana.setUTCHours(27, 0, 0, 0); // Mañana a las 00:00 (UTC-3)
+  mañana.setUTCHours(27, 0, 0, 0); // 00:00 UTC-3 del día siguiente
   const diff = mañana - ahora;
 
   const horas = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
@@ -97,50 +95,76 @@ const calcularTiempoRestante = () => {
   tiempoRestante.value = `${horas}:${minutos}:${segundos}`;
 };
 
-// Cargar preguntas del JSON y elegir 3 aleatorias
 const cargarPreguntas = async () => {
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}ruleta_rapida_independiente_10dias.json`);
+    const response = await fetch(`${import.meta.env.BASE_URL}triviaRoja.json`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
-    // Filtrar preguntas que tengan pregunta, respuesta y opciones
-    const todas = data.flat().filter(p =>
-      p.pregunta && p.respuesta_correcta && Array.isArray(p.posibles_respuestas) && p.posibles_respuestas.length >= 2
-    );
+    const clave = obtenerFechaClave();
+    const preguntasDeHoy = data[clave];
 
-    if (todas.length < 3) {
-      throw new Error('No hay suficientes preguntas válidas.');
+    if (!Array.isArray(preguntasDeHoy) || preguntasDeHoy.length < 3) {
+      throw new Error('No hay suficientes preguntas válidas para hoy.');
     }
 
-    todasLasPreguntas.value = todas;
+    todasLasPreguntas.value = preguntasDeHoy;
+    preguntas.value = [...preguntasDeHoy]; // Mantener orden
+    indicePregunta.value = 0;
+    respuestasCorrectas.value = 0;
+    juegoTerminado.value = false;
     errorCarga.value = false;
-    seleccionarPreguntasAleatorias();
+
+    cargarPregunta();
   } catch (error) {
     console.error('Error al cargar las preguntas:', error);
     errorCarga.value = true;
   }
 };
 
-const seleccionarPreguntasAleatorias = () => {
-  const mezcladas = [...todasLasPreguntas.value].sort(() => 0.5 - Math.random());
-  preguntas.value = mezcladas.slice(0, 3);
-  indicePregunta.value = 0;
-  respuestasCorrectas.value = 0;
-  juegoTerminado.value = false;
-  cargarPregunta();
-};
-
 const cargarPregunta = () => {
   preguntaActual.value = preguntas.value[indicePregunta.value];
   botonesDeshabilitados.value = false;
+
   nextTick(() => {
-    const botones = document.querySelectorAll('.opcion-btn');
-    botones.forEach(btn => {
+    document.querySelectorAll('.opcion-btn').forEach(btn => {
       btn.classList.remove('bg-success', 'bg-danger', 'text-white');
     });
   });
+
+  // Guardar tiempo de inicio si aún no está guardado
+  const claveTiempo = `tiempo-inicio-${obtenerFechaClave()}-${indicePregunta.value}`;
+  if (!localStorage.getItem(claveTiempo)) {
+    localStorage.setItem(claveTiempo, Date.now().toString());
+  }
+
   iniciarContador();
+};
+
+const iniciarContador = () => {
+  detenerContador();
+  const claveTiempo = `tiempo-inicio-${obtenerFechaClave()}-${indicePregunta.value}`;
+  const inicio = parseInt(localStorage.getItem(claveTiempo));
+  const ahora = Date.now();
+  const transcurrido = Math.floor((ahora - inicio) / 1000);
+  contador.value = Math.max(10 - transcurrido, 0);
+
+  if (contador.value === 0) {
+    terminarJuego();
+    return;
+  }
+
+  intervalo = setInterval(() => {
+    contador.value--;
+    if (contador.value <= 0) {
+      detenerContador();
+      terminarJuego();
+    }
+  }, 1000);
+};
+
+const detenerContador = () => {
+  clearInterval(intervalo);
 };
 
 const verificarRespuesta = async (opcion) => {
@@ -149,7 +173,6 @@ const verificarRespuesta = async (opcion) => {
   detenerContador();
 
   const botones = document.querySelectorAll('.opcion-btn');
-
   botones.forEach(btn => {
     const texto = btn.innerText.trim();
     if (texto === preguntaActual.value.respuesta_correcta) {
@@ -173,25 +196,10 @@ const verificarRespuesta = async (opcion) => {
     terminarJuego();
   }
 
-  // Guardar la última pregunta y respuesta en localStorage
+  // Guardar resultado final
   const clave = obtenerFechaClave();
   localStorage.setItem('pregunta-jugada-' + clave, JSON.stringify(preguntaActual.value));
   localStorage.setItem('respuesta-jugada-' + clave, opcion);
-};
-
-const iniciarContador = () => {
-  contador.value = 10;
-  intervalo = setInterval(() => {
-    contador.value--;
-    if (contador.value <= 0) {
-      detenerContador();
-      terminarJuego();
-    }
-  }, 1000);
-};
-
-const detenerContador = () => {
-  clearInterval(intervalo);
 };
 
 const terminarJuego = () => {
@@ -202,7 +210,6 @@ const terminarJuego = () => {
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Verificar si el usuario ya jugó hoy
 const verificarSiYaJugo = () => {
   const clave = obtenerFechaClave();
   yaJugado.value = localStorage.getItem('pregunta-jugada-' + clave) !== null;
@@ -221,6 +228,7 @@ onMounted(() => {
   verificarSiYaJugo();
 });
 </script>
+
 
 <style scoped>
 .preguntas-respuestas-wrapper {

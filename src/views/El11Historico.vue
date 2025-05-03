@@ -128,25 +128,32 @@ onMounted(async () => {
     ];
 
     if (juegoFinalizado.value) {
-      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante() ;
+      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante();
       mostrarCartel.value = true;
       return;
     }
 
     if (ultimaPartida === hoy) {
-      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante() ;
+      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante();
       mostrarCartel.value = true;
       return;
     }
 
-    tiempo.value = equipoData.value.tiempo_limite || 60;
-    iniciarTemporizador();
+    const tiempoGuardado = localStorage.getItem('tiempoRestante');
+    if (tiempoGuardado !== null) {
+      tiempo.value = parseInt(tiempoGuardado);
+    } else {
+      tiempo.value = equipoData.value.tiempo_limite || 60;
+      localStorage.setItem('tiempoRestante', tiempo.value.toString());
+    }
 
+    iniciarTemporizador();
   } catch (e) {
     console.error(e);
     mostrarMensajeCartel('Error al cargar los datos.');
   }
 });
+
 
 function mostrarMensajeCartel(texto) {
   mensaje.value = texto;
@@ -186,21 +193,23 @@ function verificarNombre() {
 function iniciarTemporizador() {
   if (intervalo) clearInterval(intervalo);
   intervalo = setInterval(() => {
-    tiempo.value--;
-    if (tiempo.value <= 0) {
+    if (tiempo.value > 0) {
+      tiempo.value--;
+      localStorage.setItem('tiempoRestante', tiempo.value.toString());
+    } else {
       clearInterval(intervalo);
       juegoFinalizado.value = true;
       const hoy = new Date().toISOString().split('T')[0];
       localStorage.setItem('nombresAdivinados', JSON.stringify(nombresAdivinados.value));
       localStorage.setItem('ultimaPartida', hoy);
-      if (Object.keys(nombresAdivinados.value).length === nombresOriginales.value.length) {
-        mostrarMensajeCartel('¡Felicidades! Has completado el 11 inicial.');
-      } else {
-        mostrarMensajeCartel('⏰ Se acabó el tiempo. Intenta mañana.');
-      }
+      localStorage.setItem('juegoFinalizado', 'true');
+      mostrarMensajeCartel('⏰ Se acabó el tiempo. Intenta mañana.');
     }
   }, 1000);
 }
+
+
+
 
 onUnmounted(() => {
   if (intervalo) clearInterval(intervalo);
