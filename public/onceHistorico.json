@@ -18,7 +18,7 @@
       { "nombre": "Emmanuel Gigliotti", "posicion": "DC", "pista": "\"El Puma\", goleador de la Sudamericana." }
     ],
     "esquema": "4-2-3-1",
-    "tiempo_limite": 30,
+    "tiempo_limite": 80,
     "resultados_falsos": ["Independiente 1 - 1 Flamengo", "Independiente 1 - 2 Flamengo", "Independiente 3 - 2 Flamengo"],
     "goleadores_falsos": ["Martín Benítez", "Esequiel Barco", "Fabricio Bustos"]
   },

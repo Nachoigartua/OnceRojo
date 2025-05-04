@@ -247,16 +247,29 @@ const activarTemblor = () => {
 const verificarOrden = () => {
   let correctos = 0;
 
-  jugadoresColocados.value.forEach((jugador, index) => {
-    if (jugador && jugador.coste === jugadoresReferencia.value[index]?.coste) {
+  // Verify that the players are ordered by descending "coste"
+  for (let i = 0; i < jugadoresColocados.value.length - 1; i++) {
+    const jugadorActual = jugadoresColocados.value[i];
+    const siguienteJugador = jugadoresColocados.value[i + 1];
+
+    if (
+      jugadorActual &&
+      siguienteJugador &&
+      jugadorActual.coste >= siguienteJugador.coste
+    ) {
       correctos++;
     }
-  });
+  }
+
+  // Add the last player as correct if it exists
+  if (jugadoresColocados.value[jugadoresColocados.value.length - 1]) {
+    correctos++;
+  }
 
   vidas.value--;
   activarTemblor(); // Trigger animation when lives are reduced
 
-  if (jugadoresColocados.value.every((slot) => slot !== null) && correctos === 10) {
+  if (correctos === 10) {
     resultado.value = `✅ ¡Perfecto! Ordenaste correctamente los 10 jugadores.`;
     resultadoClase.value = 'text-success bg-light';
     juegoTerminado.value = true;
