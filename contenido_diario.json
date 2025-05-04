@@ -1,23 +1,52 @@
 {
-    "2025-05-03": {
-      "video": "Perez.mp4",
-      "respuestas": [
-        "La abre al lateral",
-        "Dispara al arco y va al saque de arco",
-        "Dispara al arco y es gol",
-        "Termina en gol en contra"
-      ],
-      "correcta": "Dispara al arco y va al saque de arco"
-    },
-    "2025-05-02": {
-      "video": "Caute.mp4",
-      "respuestas": [
-        "Le pega y es gol",
-        "La pasa atras y es gol",
-        "Se la quitan",
-        "Le pega y la manda a las nubes"
-      ],
-      "correcta": "La pasa atras y es gol"
-    }
+  "2025-05-03": {
+    "video": "Romero.mp4",
+    "respuestas": [
+      "La puntea y gol del chino romero",
+      "Le pega mal ,rebote y gol en contra",
+      "La pelota pasa de largo",
+      "Le hacen penal"
+    ],
+    "correcta": "La puntea y gol del chino romero"
+  },
+  "2025-05-04": {
+    "video": "Bustos.mp4",
+    "respuestas": [
+      "Le pega y es gol",
+      "La pasa al medio y erra el 9",
+      "Se la quitan",
+      "Le hacen penal"
+    ],
+    "correcta": "Le hacen penal"
+  },
+  "2025-05-05": {
+    "video": "Cabral.mp4",
+    "respuestas": [
+      "Le pega y es gol",
+      "Le pega y va al saque de arco",
+      "Le pega al palo",
+      "Le pega y va al corner"
+    ],
+    "correcta": "Le pega al palo"
+  },
+  "2025-05-06": {
+    "video": "Caute.mp4",
+    "respuestas": [
+      "Le pega y es gol",
+      "La pasa atras y es gol",
+      "Se la quitan",
+      "Le pega y la manda a las nubes"
+    ],
+    "correcta": "La pasa atras y es gol"
+  },
+  "2025-05-07": {
+    "video": "Perez.mp4",
+    "respuestas": [
+      "La abre al lateral",
+      "Dispara al arco y va al saque de arco",
+      "Dispara al arco y es gol",
+      "Termina en gol en contra"
+    ],
+    "correcta": "Dispara al arco y va al saque de arco"
   }
-  
+}
