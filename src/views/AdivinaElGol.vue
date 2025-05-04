@@ -33,10 +33,11 @@
         <div v-for="(respuesta, index) in respuestas" :key="index">
           <button
             class="respuesta-btn"
-            :class="{
-              'correcta': yaRespondio && respuesta === correctaDelDia,
-              'incorrecta': yaRespondio && respuesta === respuestaSeleccionada && respuesta !== correctaDelDia
-            }"
+          :class="{
+  'correcta': mostrarResultadoVisual && respuesta === correctaDelDia,
+  'incorrecta': mostrarResultadoVisual && respuesta === respuestaSeleccionada && respuesta !== correctaDelDia
+}"
+
             :disabled="yaRespondio || respuestaSeleccionada !== null || !respuestasHabilitadas"
             @click="verificarRespuesta(respuesta)"
           >
@@ -50,6 +51,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { obtenerFechaArgentina, calcularTiempoHastaMedianocheArgentina } from '@/utils/horaArgentina';
 
 const video = ref(null);
 const contador = ref(0); // Contador de tiempo restante
@@ -62,31 +64,25 @@ const respuestasHabilitadas = ref(false);
 const tiempoAgotado = ref(false);
 const videoSrc = ref('');
 let correctaDelDia = '';
-
+const mostrarResultadoVisual = ref(false);
 const yaRespondio = ref(false); // Estado manejado en memoria
 const tiempoRestante = ref('');
 
 // Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
-  const ahora = new Date();
-  const proximaMedianoche = new Date(ahora);
-  proximaMedianoche.setHours(24, 0, 0, 0);
-  const diferencia = proximaMedianoche - ahora;
-  const horas = Math.floor(diferencia / (1000 * 60 * 60));
-  const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-  tiempoRestante.value = `${horas}h ${minutos}m`;
+  tiempoRestante.value = calcularTiempoHastaMedianocheArgentina();
 };
 
 // Función para guardar la respuesta en localStorage
 const guardarRespuesta = () => {
-  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+const hoy = obtenerFechaArgentina(); // Asegurate de que esta función devuelva YYYY-MM-DD
   localStorage.setItem(`gol-respondido-${hoy}`, 'true');
   localStorage.setItem(`gol-respuesta-${hoy}`, respuestaSeleccionada.value);
 };
 
 // Función para cargar el estado desde localStorage
 const cargarEstado = () => {
-  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+const hoy = obtenerFechaArgentina(); // Asegurate de que esta función devuelva YYYY-MM-DD
   const respondido = localStorage.getItem(`gol-respondido-${hoy}`);
   const respuesta = localStorage.getItem(`gol-respuesta-${hoy}`);
 
@@ -101,8 +97,9 @@ const cargarEstado = () => {
 // Cargar datos del JSON al montar el componente
 onMounted(async () => {
   cargarEstado(); // Cargar el estado desde localStorage
+  calcularTiempoRestante();
 
-  const hoy = new Date().toISOString().slice(0, 10); // Fecha actual en formato YYYY-MM-DD
+const hoy = obtenerFechaArgentina(); // Asegurate de que esta función devuelva YYYY-MM-DD
 
   try {
     const data = await fetch(`${import.meta.env.BASE_URL}contenido_diario.json`).then((res) => res.json());
@@ -148,20 +145,26 @@ const verificarRespuesta = (respuesta) => {
   if (tiempoAgotado.value || yaRespondio.value) return;
 
   respuestaSeleccionada.value = respuesta;
-  yaRespondio.value = true; // Marca que el usuario ya respondió
-  guardarRespuesta(); // Guarda la respuesta en localStorage
+  yaRespondio.value = true;
+  guardarRespuesta();
 
+  // Reanudar el video inmediatamente
+  if (!tiempoAgotado.value) {
+    video.value.play();
+  }
+
+  // Mostrar resultado visual tras 3 segundos
   setTimeout(() => {
+    mostrarResultadoVisual.value = true;
     esCorrecta.value = respuesta === correctaDelDia;
-    resultado.value = esCorrecta.value ? '✅ ¡Correcto!' : `❌ Incorrecto. Era: ${correctaDelDia}`;
+    resultado.value = esCorrecta.value
+      ? '✅ ¡Correcto!'
+      : `❌ Incorrecto. Era: ${correctaDelDia}`;
     videoFinalizado.value = true;
-
-    // Reanudar el video después de que el jugador responda
-    if (!tiempoAgotado.value) {
-      video.value.play();
-    }
-  }, 1000); // Reducido el tiempo de espera para una mejor experiencia
+  }, 3000);
 };
+
+
 
 // Finalizar el video
 const finalizarVideo = () => {

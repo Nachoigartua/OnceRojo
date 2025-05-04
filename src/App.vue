@@ -1,19 +1,35 @@
 <template>
-  <div>
-    <!-- Logo arriba a la izquierda -->
-    <router-link to="/minijuegos" class="marca-arriba d-flex align-items-center gap-2">
-      <span class="emoji-logo"></span>
+  <div class="app-container">
+    <!-- Logo arriba a la izquierda (solo si NO estás en /minijuegos) -->
+    <router-link
+      v-if="!esMinijuegos"
+      to="/minijuegos"
+      class="marca-arriba d-flex align-items-center gap-2"
+    >
       <span class="texto-logo">🏆RojoFut11🏆</span>
     </router-link>
 
     <!-- Contenido dinámico -->
-    <router-view />
+    <div class="contenido">
+      <router-view />
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>© 2025 RojoFut11. Todos los derechos reservados.</p>
+      <p>Creado con ❤️ por hinchas del Rojo</p>
+    </footer>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  computed: {
+    esMinijuegos() {
+      return this.$route.path === '/minijuegos';
+    }
+  }
 }
 </script>
 
@@ -34,11 +50,6 @@ export default {
   animation: glowLogo 2s ease-in-out infinite alternate;
 }
 
-.emoji-logo {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
-}
-
 .texto-logo {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.6rem;
@@ -52,7 +63,6 @@ export default {
   box-shadow: 0 0 15px rgba(255, 80, 80, 0.7);
 }
 
-/* Animación pulsante suave */
 @keyframes glowLogo {
   from {
     box-shadow: 0 0 10px rgba(255, 50, 50, 0.3);
@@ -61,13 +71,39 @@ export default {
     box-shadow: 0 0 20px rgba(255, 100, 100, 0.7);
   }
 }
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #111; /* fondo oscuro uniforme para evitar bordes blancos */
+}
+
+.contenido {
+  flex: 1;
+  padding-bottom: 2rem;
+}
+
+.footer {
+  background-color: #333; /* gris oscuro */
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.3);
+  border-top: 1px solid #444;
+}
+
 html, body, #app {
-  transform: scale(0.4); /* Cambiá el valor a gusto */
-  transform-origin: top left;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #111;
 }
 
 body {
   overflow-x: hidden;
 }
-
 </style>

@@ -67,6 +67,7 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { obtenerFechaArgentina, calcularTiempoHastaMedianocheArgentina } from '@/utils/horaArgentina';
 
 const intentos = ref([]); // Cada intento validado (con color)
 const palabraDelDia = ref(''); // Palabra del día
@@ -76,28 +77,9 @@ const yaJugado = ref(false); // Si ya jugó hoy
 const tiempoRestante = ref(''); // Tiempo restante para el próximo desafío
 const intentoActual = ref([]); // Letras del intento en curso
 
-// Función para obtener la fecha clave (YYYY-MM-DD)
-const obtenerFechaClave = () => {
-  const ahora = new Date();
-  ahora.setUTCHours(3, 0, 0, 0); // Ajuste para UTC-3
-  return ahora.toISOString().slice(0, 10);
-};
-
 // Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
-  const ahora = new Date();
-  const ahoraUTC3 = new Date(ahora.toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }));
-
-  const siguienteDia = new Date(ahoraUTC3);
-  siguienteDia.setHours(24, 0, 0, 0); // Medianoche del siguiente día
-
-  const msRestantes = siguienteDia - ahoraUTC3;
-
-  const horas = Math.floor(msRestantes / (1000 * 60 * 60));
-  const minutos = Math.floor((msRestantes % (1000 * 60 * 60)) / (1000 * 60));
-  const segundos = Math.floor((msRestantes % (1000 * 60)) / 1000);
-
-  tiempoRestante.value = `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+  tiempoRestante.value = calcularTiempoHastaMedianocheArgentina();
 };
 
 // Función para colorear un intento
@@ -144,9 +126,9 @@ const intentarAdivinar = () => {
   }
 
   // Marcar como jugado y guardar progreso
-  localStorage.setItem('rodle-jugado-' + obtenerFechaClave(), 'true');
-  localStorage.setItem('rodle-intentos-' + obtenerFechaClave(), JSON.stringify(intentos.value));
-  localStorage.setItem('rodle-correcto-' + obtenerFechaClave(), esCorrecto.value.toString());
+  localStorage.setItem('rodle-jugado-' + obtenerFechaArgentina(), 'true');
+  localStorage.setItem('rodle-intentos-' + obtenerFechaArgentina(), JSON.stringify(intentos.value));
+  localStorage.setItem('rodle-correcto-' + obtenerFechaArgentina(), esCorrecto.value.toString());
 
   intentoActual.value = [];
 };
@@ -187,7 +169,7 @@ const getChar = (fila, col) => {
 
 // Cargar datos al montar el componente
 onMounted(async () => {
-  const clave = obtenerFechaClave();
+  const clave = obtenerFechaArgentina();
   yaJugado.value = localStorage.getItem('rodle-jugado-' + clave) === 'true';
 
   try {
@@ -230,61 +212,74 @@ onBeforeUnmount(() => {
   background: linear-gradient(to bottom, #670000, #0a0000);
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding-top: 4rem;
-  padding-bottom: 4rem;
   font-family: 'Bebas Neue', sans-serif;
+  padding: 2rem;
+  text-align: center;
 }
 
 .titulo-juego {
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: #fff;
-  text-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+  margin-bottom: 2rem;
 }
 
 .reloj {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #ffaaaa;
-  text-shadow: 0 0 5px red;
+  text-shadow: 0 0 6px red;
+  margin-top: 0.5rem;
 }
 
 .grilla {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
   align-items: center;
+  margin-top: 2rem;
 }
 
 .fila {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .letra {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 4.2rem;
+  height: 4.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
-  border-radius: 5px;
+  border-radius: 8px;
   background-color: #222;
   color: white;
-  border: 1px solid #555;
+  border: 2px solid #555;
   text-transform: uppercase;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
 .verde {
   background-color: #4caf50;
+  color: white;
 }
 
 .naranja {
   background-color: #ff9800;
+  color: white;
 }
 
 .gris {
   background-color: #777;
+  color: white;
+}
+
+.fs-5 {
+  font-size: 1.3rem;
 }
 </style>
+

@@ -92,6 +92,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { obtenerFechaArgentina, calcularTiempoHastaMedianocheArgentina } from '@/utils/horaArgentina';
 
 const jugadores = ref([]);
 const jugadorActual = ref(null);
@@ -107,22 +108,13 @@ const yaJugado = ref(false);
 const tiempoRestante = ref('');
 const esCorrecta = ref(false);
 
-const hoy = new Date().toISOString().slice(0, 10);
-
-// Calcular tiempo hasta medianoche
 const calcularTiempoRestante = () => {
-  const ahora = new Date();
-  const proximaMedianoche = new Date(ahora);
-  proximaMedianoche.setHours(24, 0, 0, 0);
-  const diferencia = proximaMedianoche - ahora;
-
-  const horas = Math.floor(diferencia / (1000 * 60 * 60));
-  const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-  tiempoRestante.value = `${horas}h ${minutos}m`;
+  tiempoRestante.value = calcularTiempoHastaMedianocheArgentina();
 };
 
 // Verificar si ya jugó hoy
 const verificarRespuestaGuardada = () => {
+  const hoy = obtenerFechaArgentina();
   const respuestaGuardada = localStorage.getItem(`jugador-jugado-${hoy}`);
   if (respuestaGuardada) {
     yaJugado.value = true;
@@ -147,6 +139,7 @@ const verificarRespuestaGuardada = () => {
 
 // Guardar progreso
 const guardarRespuesta = () => {
+  const hoy = obtenerFechaArgentina();
   localStorage.setItem(`jugador-jugado-${hoy}`, 'respondido');
   localStorage.setItem('respuesta-correcta', esCorrecta.value);
   localStorage.setItem('respuesta-jugador', jugadorActual.value?.nombre || '');
@@ -164,6 +157,7 @@ const cargarJugadorDelDia = async () => {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
+    const hoy = obtenerFechaArgentina();
     const jugadorDelDia = data.jugadoresPorDia.find(j => j.fecha === hoy);
     if (jugadorDelDia) {
       jugadorActual.value = jugadorDelDia;
@@ -203,6 +197,7 @@ const mostrarPista = () => {
 
   vidas.value--;
   activarTemblor();
+  const hoy = obtenerFechaArgentina();
   localStorage.setItem(`pistas-mostradas-${hoy}`, JSON.stringify(pistasMostradas.value));
   localStorage.setItem(`vidas-jugador-${hoy}`, vidas.value);
 };
@@ -269,7 +264,9 @@ const activarTemblor = () => {
 
 // Inicio
 onMounted(() => {
+  const hoy = obtenerFechaArgentina();
   verificarRespuestaGuardada();
+  calcularTiempoRestante();
   cargarJugadorDelDia();
   cargarJugadores();
 });

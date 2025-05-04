@@ -132,6 +132,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { obtenerFechaArgentina, calcularTiempoHastaMedianocheArgentina } from '@/utils/horaArgentina';
 
 const jugadores = ref([]);
 const jugadoresReferencia = ref([]);
@@ -170,17 +171,11 @@ const getImagenUrl = (path) => {
 };
 
 function calcularTiempoRestante() {
-  const ahora = new Date();
-  const siguiente = new Date();
-  siguiente.setHours(24, 0, 0, 0);
-  const diffMs = siguiente - ahora;
-  const h = Math.floor(diffMs / (1000 * 60 * 60));
-  const m = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-  tiempoRestante.value = `${h}h ${m}m`;
+  tiempoRestante.value = calcularTiempoHastaMedianocheArgentina();
 }
 
 onMounted(async () => {
-  const hoy = new Date().toISOString().split('T')[0];
+  const hoy = obtenerFechaArgentina();
   const jugado = localStorage.getItem('topVentasJugado') === hoy;
 
   if (jugado) {
@@ -294,6 +289,14 @@ const verificarOrden = () => {
   background-size: 400% 400%;
   animation: fuegoFondo 10s ease infinite;
   font-family: 'Bebas Neue', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 100vh;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 @keyframes fuegoFondo {
@@ -308,25 +311,23 @@ const verificarOrden = () => {
   color: #ffffff;
   text-shadow: 0 0 15px #ff0000, 0 0 5px #fff;
   letter-spacing: 2px;
+  margin-bottom: 2rem;
 }
+
 .contenedor-principal {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
-  gap: 40px; /* espacio entre la pirámide y el jugador actual */
   width: 100%;
-  flex-wrap: wrap; /* por si en pantallas chicas baja uno abajo */
-  transition: all 0.5s ease;
+  gap: 2rem;
 }
 
 .piramide-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0rem;
-  transition: all 0.5s ease;
-  margin-top: -45px; /* sube la pirámide */
-
+  gap: 0.5rem;
 }
 
 .centrar-piramide {
@@ -334,12 +335,16 @@ const verificarOrden = () => {
 }
 
 .slot-jugador {
-  border: 2px solid #ffffff;
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 140px;
+  height: 70px;
+  background-color: #6c757d;
+  border-radius: 10px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
 }
 
 .slot-jugador:hover {
@@ -349,10 +354,12 @@ const verificarOrden = () => {
 }
 
 .jugador-actual {
-  background: radial-gradient(circle, #ffffff, #ff0000);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
-  border: 3px solid #fff;
-  animation: rebote 1s infinite;
+  max-width: 220px;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(255,255,255,0.2);
+  animation: bounce 1s infinite alternate;
 }
 
 @keyframes rebote {
@@ -360,13 +367,22 @@ const verificarOrden = () => {
   50% { transform: translateY(-8px); }
 }
 
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+
 .posicion-numero {
-  background-color: #ffffff;
-  color: #4a0000;
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 6px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  background: #fff;
+  color: #000;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 0.8rem;
+  line-height: 22px;
 }
 
 .resultado {
@@ -384,6 +400,11 @@ const verificarOrden = () => {
   color: #FFD700;
   text-shadow: 0 0 10px red;
 }
+
+.vidas-container {
+  gap: 0.5rem;
+}
+
 .centrado-final {
   justify-content: center !important;
 }
@@ -408,12 +429,6 @@ const verificarOrden = () => {
   transform: scale(1.1);
   box-shadow: 0 0 30px rgba(255, 50, 50, 0.9);
   cursor: pointer;
-}
-
-
-.btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px #ffffff;
 }
 
 .plantilla-entregada {

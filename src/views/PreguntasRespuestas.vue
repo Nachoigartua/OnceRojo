@@ -59,6 +59,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
+import { obtenerFechaArgentina, calcularTiempoHastaMedianocheArgentina } from '@/utils/horaArgentina';
 
 const todasLasPreguntas = ref([]);
 const preguntas = ref([]);
@@ -76,23 +77,8 @@ const ultimaRespuesta = ref('');
 const errorCarga = ref(false);
 let intervalo = null;
 
-const obtenerFechaClave = () => {
-  const ahora = new Date();
-  ahora.setUTCHours(3, 0, 0, 0); // UTC-3
-  return ahora.toISOString().slice(0, 10);
-};
-
 const calcularTiempoRestante = () => {
-  const ahora = new Date();
-  const mañana = new Date();
-  mañana.setUTCHours(27, 0, 0, 0); // 00:00 UTC-3 del día siguiente
-  const diff = mañana - ahora;
-
-  const horas = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-  const minutos = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-  const segundos = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-
-  tiempoRestante.value = `${horas}:${minutos}:${segundos}`;
+  tiempoRestante.value = calcularTiempoHastaMedianocheArgentina();
 };
 
 const cargarPreguntas = async () => {
@@ -101,7 +87,7 @@ const cargarPreguntas = async () => {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
 
-    const clave = obtenerFechaClave();
+    const clave = obtenerFechaArgentina();
     const preguntasDeHoy = data[clave];
 
     if (!Array.isArray(preguntasDeHoy) || preguntasDeHoy.length < 3) {
@@ -133,7 +119,7 @@ const cargarPregunta = () => {
   });
 
   // Guardar tiempo de inicio si aún no está guardado
-  const claveTiempo = `tiempo-inicio-${obtenerFechaClave()}-${indicePregunta.value}`;
+  const claveTiempo = `tiempo-inicio-${obtenerFechaArgentina()}-${indicePregunta.value}`;
   if (!localStorage.getItem(claveTiempo)) {
     localStorage.setItem(claveTiempo, Date.now().toString());
   }
@@ -143,7 +129,7 @@ const cargarPregunta = () => {
 
 const iniciarContador = () => {
   detenerContador();
-  const claveTiempo = `tiempo-inicio-${obtenerFechaClave()}-${indicePregunta.value}`;
+  const claveTiempo = `tiempo-inicio-${obtenerFechaArgentina()}-${indicePregunta.value}`;
   const inicio = parseInt(localStorage.getItem(claveTiempo));
   const ahora = Date.now();
   const transcurrido = Math.floor((ahora - inicio) / 1000);
@@ -197,7 +183,7 @@ const verificarRespuesta = async (opcion) => {
   }
 
   // Guardar resultado final
-  const clave = obtenerFechaClave();
+  const clave = obtenerFechaArgentina();
   localStorage.setItem('pregunta-jugada-' + clave, JSON.stringify(preguntaActual.value));
   localStorage.setItem('respuesta-jugada-' + clave, opcion);
 };
@@ -211,7 +197,7 @@ const terminarJuego = () => {
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const verificarSiYaJugo = () => {
-  const clave = obtenerFechaClave();
+  const clave = obtenerFechaArgentina();
   yaJugado.value = localStorage.getItem('pregunta-jugada-' + clave) !== null;
 
   if (yaJugado.value) {

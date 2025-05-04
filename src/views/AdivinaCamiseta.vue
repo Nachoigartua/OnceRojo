@@ -44,6 +44,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { obtenerFechaArgentina, calcularTiempoHastaMedianocheArgentina } from '@/utils/horaArgentina';
 
 const imagenSrc = ref('');
 const opciones = ref([]);
@@ -54,16 +55,8 @@ const resultado = ref('');
 const yaRespondio = ref(false);
 const tiempoRestante = ref('');
 
-// Función para calcular el tiempo restante hasta las 00:00 (hora de Argentina)
 const calcularTiempoRestante = () => {
-  const ahora = new Date();
-  const proximaMedianoche = new Date(ahora);
-  proximaMedianoche.setHours(24, 0, 0, 0); // Establece la hora a las 00:00 del día siguiente
-  const diferencia = proximaMedianoche - ahora;
-
-  const horas = Math.floor(diferencia / (1000 * 60 * 60));
-  const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-  tiempoRestante.value = `${horas}h ${minutos}m`;
+  tiempoRestante.value = calcularTiempoHastaMedianocheArgentina();
 };
 
 // Función para verificar si el usuario ya respondió
@@ -93,8 +86,9 @@ const guardarRespuesta = () => {
 };
 
 onMounted(async () => {
-  const hoy = new Date().toISOString().slice(0, 10).replace(/-/g, '_'); // Obtiene la fecha actual en formato YYYY_MM_DD
-  verificarRespuestaGuardada(); // Verifica si ya respondió
+  const hoy = obtenerFechaArgentina();
+  verificarRespuestaGuardada();
+  calcularTiempoRestante();
   try {
     const data = await fetch(`${import.meta.env.BASE_URL}camisetas_adivina.json`).then((res) => res.json());
     if (data[hoy]) {

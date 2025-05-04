@@ -72,11 +72,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { obtenerFechaArgentina, calcularTiempoHastaMedianocheArgentina } from '@/utils/horaArgentina';
 
-const preguntas = ref([]); // Preguntas del día
-const opciones = ref([]); // Opciones actuales
-const intruso = ref(''); // Intruso actual
-const preguntaActual = ref(0); // Índice de la pregunta actual
+const preguntas = ref([]);
+const opciones = ref([]);
+const intruso = ref('');
+const preguntaActual = ref(0);
 const respuestaSeleccionada = ref(false);
 const esCorrecta = ref(false);
 const mensajeResultado = ref('');
@@ -84,27 +85,12 @@ const yaJugado = ref(false);
 const tiempoRestante = ref('');
 const respuestaGuardada = ref('');
 const preguntasGuardadas = ref([]);
-const correctas = ref(0); // Contador de respuestas correctas
+const correctas = ref(0);
 
-// Obtener fecha clave en formato YYYY-MM-DD (con ajuste a UTC-3)
-const obtenerFechaClave = () => {
-  const ahora = new Date();
-  ahora.setUTCHours(3, 0, 0, 0); // UTC-3 fijo
-  return ahora.toISOString().slice(0, 10);
-};
+const obtenerFechaClave = () => obtenerFechaArgentina();
 
-// Calcular tiempo hasta las 00:00 del día siguiente en horario de Argentina
 const calcularTiempoRestante = () => {
-  const ahora = new Date();
-  const mañana = new Date();
-  mañana.setUTCHours(27, 0, 0, 0); // 00:00 de Argentina del día siguiente
-  const diff = mañana - ahora;
-
-  const horas = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, '0');
-  const minutos = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-  const segundos = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-
-  tiempoRestante.value = `${horas}:${minutos}:${segundos}`;
+  tiempoRestante.value = calcularTiempoHastaMedianocheArgentina();
 };
 
 // Verificar la respuesta
@@ -115,15 +101,14 @@ const verificarRespuesta = (opcion) => {
     ? '✅ ¡Correcto!'
     : `❌ Incorrecto. El intruso era: ${intruso.value}`;
 
-  if (esCorrecta.value) correctas.value++; // Incrementar contador si es correcta
+  if (esCorrecta.value) correctas.value++;
 
   const clave = obtenerFechaClave();
   preguntasGuardadas.value.push(preguntas.value[preguntaActual.value]);
   localStorage.setItem('preguntas-guardadas-' + clave, JSON.stringify(preguntasGuardadas.value));
 
-  // Llamar al método para mostrar el mensaje final si es la última pregunta
   if (preguntaActual.value === 2) {
-    mostrarMensajeFinal(clave); // Remove `opcion` as it's not needed here
+    mostrarMensajeFinal(clave);
   }
 };
 
@@ -134,9 +119,9 @@ const mostrarMensajeFinal = (clave) => {
   } else {
     mensajeResultado.value = `❌ Fallaste, Respondiste correctamente ${correctas.value} de 3 preguntas.`;
   }
-  localStorage.setItem('respuesta-' + clave, 'true'); // Marcar como jugado
-  localStorage.setItem('correctas-' + clave, correctas.value); // Guardar el número de correctas
-  localStorage.setItem('preguntas-guardadas-' + clave, JSON.stringify(preguntasGuardadas.value)); // Guardar preguntas
+  localStorage.setItem('respuesta-' + clave, 'true');
+  localStorage.setItem('correctas-' + clave, correctas.value);
+  localStorage.setItem('preguntas-guardadas-' + clave, JSON.stringify(preguntasGuardadas.value));
 };
 
 // Pasar a la siguiente pregunta
@@ -146,8 +131,8 @@ const siguientePregunta = () => {
     cargarPreguntaActual();
     respuestaSeleccionada.value = false;
   } else {
-    preguntaActual.value++; // Incrementar a 3 para activar el mensaje final
-    respuestaSeleccionada.value = false; // Asegurarse de que no quede seleccionada
+    preguntaActual.value++;
+    respuestaSeleccionada.value = false;
   }
 };
 
@@ -185,7 +170,7 @@ const cargarDatosDelDia = async () => {
   }
 };
 
-// Función para formatear los resultados
+// Formatear resultados para debug o mostrar historial
 const formatearResultados = (preguntas) => {
   return preguntas
     .map((pregunta, index) => `Pregunta ${index + 1}: ${pregunta.intruso}`)
@@ -197,23 +182,22 @@ onMounted(async () => {
   const clave = obtenerFechaClave();
   yaJugado.value = localStorage.getItem('respuesta-' + clave) === 'true';
 
-  // Siempre cargamos los datos del día para tener las opciones visibles
   await cargarDatosDelDia();
 
   if (yaJugado.value) {
     respuestaGuardada.value = localStorage.getItem('seleccionada-' + clave) || '';
     intruso.value = localStorage.getItem('correcta-' + clave) || '';
     preguntasGuardadas.value = JSON.parse(localStorage.getItem('preguntas-guardadas-' + clave)) || [];
-    correctas.value = parseInt(localStorage.getItem('correctas-' + clave), 10) || 0; // Load correctas from storage
-    mostrarMensajeFinal(clave); // Use the updated method
+    correctas.value = parseInt(localStorage.getItem('correctas-' + clave), 10) || 0;
+    mostrarMensajeFinal(clave);
     calcularTiempoRestante();
     setInterval(calcularTiempoRestante, 1000);
-    respuestaSeleccionada.value = true; // Mostrar resultado en el template
-    preguntaActual.value = 3; // Mostrar el mensaje final directamente
+    respuestaSeleccionada.value = true;
+    preguntaActual.value = 3;
   }
 });
-
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
