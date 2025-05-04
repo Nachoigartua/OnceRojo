@@ -41,8 +41,8 @@
         { "nombre": "José Luis Calderón", "coste": 3.8, "imagen": "/VentaJugadores/Calderon.jpg" },
         { "nombre": "Nicolás Frutos", "coste": 2.5, "imagen": "/VentaJugadores/Frutos.jpg" },
         { "nombre": "Rodrigo Atencio", "coste": 1.9, "imagen": "/VentaJugadores/Atencio.jpg" },
-        { "nombre": "Federico Insúa", "coste": 2.4, "imagen": "/VentaJugadores/Insua.jpg" },
-        { "nombre": "Alan Franco", "coste": 2.9, "imagen": "/VentaJugadores/Alan Franco.jpg" },
+        { "nombre": "Federico Insúa", "coste": 2.4, "imagen": "/VentaJugadores/FedericoInsua.jpg" },
+        { "nombre": "Alan Franco", "coste": 2.9, "imagen": "/VentaJugadores/Franco.jpg" },
         { "nombre": "Bruno Marioni", "coste": 3.6, "imagen": "/VentaJugadores/Marioni.jpg" }
       ]
     }
