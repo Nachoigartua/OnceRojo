@@ -1,30 +1,46 @@
 <template>
   <div class="contenedor">
-    <!-- Nombre del partido -->
+    <!-- Título con el nombre del equipo -->
     <h1 class="titulo">
       {{ equipoData.equipo || 'Nombre del partido no disponible' }}
     </h1>
 
     <!-- Fase: Formación -->
     <div v-if="fase === 'formacion'">
-      <p class="subtitulo">Tiempo restante: {{ tiempoFormateado }}</p>
-      <p class="indicacion">Ingresá los nombres del 11 titular y el DT:</p>
+      <!-- Mensaje de derrota o victoria al final del juego -->
+      <div
+        v-if="juegoFinalizado"
+        :class="mensaje.includes('Perdiste') ? 'mensaje-derrota' : 'mensaje-correcto'"
+      >
+        <p>{{ mensaje }}</p>
+      </div>
+
+      <!-- Tiempo restante -->
+      <p v-if="!yaJugadoHoy" class="subtitulo">Tiempo restante: {{ tiempoFormateado }}</p>
+
+      <!-- Instrucciones -->
+      <p v-if="!yaJugadoHoy" class="indicacion">Ingresá los nombres del 11 titular y el DT:</p>
+
+      <!-- Campo de texto para ingresar nombres -->
       <input
+        v-if="!yaJugadoHoy"
         v-model="inputNombre"
         @keyup.enter="verificarNombre"
         class="input-jugador"
         :disabled="tiempo.value <= 0 || juegoFinalizado"
         placeholder="Escribe un nombre de jugador o DT..."
       />
+
+      <!-- Mensaje de error individual -->
       <p v-if="mensajeError" class="mensaje-error">{{ mensajeError }}</p>
 
-      <!-- Pizarra de jugadores -->
+      <!-- Pizarra táctica -->
       <div class="pizarra">
-        <!-- Cuadro del DT -->
+        <!-- Cuadro para el DT -->
         <div class="dt-container">
           {{ nombresAdivinados.DT || 'DT' }}
           <button
-            v-if="!nombresAdivinados.DT"
+            v-if="!nombresAdivinados.DT && !yaJugadoHoy"
             class="pista-boton"
             @click="mostrarPista('DT')"
           >
@@ -32,7 +48,7 @@
           </button>
         </div>
 
-        <!-- Jugadores -->
+        <!-- Jugadores distribuidos en líneas -->
         <div class="linea" v-for="(linea, index) in pizarra" :key="index">
           <div
             v-for="(posicion, i) in linea"
@@ -42,7 +58,7 @@
           >
             {{ nombresAdivinados[posicion] || posicion }}
             <button
-              v-if="!nombresAdivinados[posicion]"
+              v-if="!nombresAdivinados[posicion] && !yaJugadoHoy"
               class="pista-boton"
               @click="mostrarPista(posicion)"
             >
@@ -51,15 +67,14 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Cartel de mensaje -->
-    <div v-if="mostrarCartel" class="cartel-mensaje">
-      <p>{{ mensaje }}</p>
+      <!-- Mensaje de tiempo restante para volver a jugar -->
+      <div v-if="yaJugadoHoy" class="mensaje-reintento">
+        Volvé a intentarlo en {{ tiempoRestanteHoy }} 🕛
+      </div>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted, computed, onUnmounted } from 'vue';
@@ -71,12 +86,14 @@ const nombresAdivinados = ref({});
 const inputNombre = ref('');
 const tiempo = ref(60);
 const juegoFinalizado = ref(false);
-const fase = ref('formacion'); // Add this line to define the 'fase' property
+const fase = ref('formacion');
+const yaJugadoHoy = ref(false);
 
 const pizarra = ref([]);
 const mensaje = ref('');
-const mostrarCartel = ref(false);
 const mensajeError = ref('');
+
+const tiempoRestanteHoy = computed(() => calcularTiempoHastaMedianocheArgentina());
 
 let intervalo;
 
@@ -94,31 +111,83 @@ function normalizarTexto(texto) {
     .toLowerCase();
 }
 
-function generarPizarra(formacion) {
-  const posiciones = formacion.map((j) => j.posicion);
-  const defensas = posiciones.filter((p) => p.startsWith('DF')).map((pos) => {
-    if (pos === 'DFI') return 'DFD';
-    if (pos === 'DFD') return 'DFI';
-    return pos;
-  });
-  const mediocampistas = posiciones.filter((p) => p.startsWith('MC'));
-  const delanteros = posiciones.filter((p) => ['EI', 'DC', 'ED'].includes(p));
-  const arquero = posiciones.filter((p) => p === 'POR');
-  return [delanteros, mediocampistas, defensas, arquero];
+function armarEsquema(esquema, formacion) {
+  const posiciones = {
+    "4-2-3-1": [
+      ["POR"],
+      ["DFI", "DFC1", "DFC2", "DFD"],
+      ["MCD1", "MCD2"],
+      ["EI", "MCO", "ED"],
+      ["DC"]
+    ],
+    "4-3-3": [
+      ["POR"],
+      ["DFI", "DFC1", "DFC2", "DFD"],
+      ["MC1", "MC2", "MC3"],
+      ["EI", "DC", "ED"]
+    ],
+    "4-4-2": [
+      ["POR"],
+      ["DFI", "DFC1", "DFC2", "DFD"],
+      ["MI", "MC1", "MC2", "MD"],
+      ["DC1", "DC2"]
+    ],
+    "4-3-1-2": [
+      ["POR"],
+      ["DFI", "DFC1", "DFC2", "DFD"],
+      ["MC1", "MC2", "MC3"],
+      ["MCO"],
+      ["DC1", "DC2"]
+    ]
+  };
+
+  const esquemaPosiciones = posiciones[esquema] || [];
+  return esquemaPosiciones
+    .map(linea =>
+      linea.map(posicion => {
+        const jugador = formacion.find(j => j.posicion === posicion);
+        return jugador ? jugador.posicion : posicion;
+      })
+    )
+    .reverse();
 }
 
 onMounted(async () => {
   try {
     const hoy = obtenerFechaArgentina();
     const ultimaPartida = localStorage.getItem('ultimaPartida');
+
+    // Mostrar mensaje si ya se jugó hoy
+    if (ultimaPartida === hoy) {
+      yaJugadoHoy.value = true;
+
+      // Cargar la plantilla completa para mostrarla
+      const data = await fetch(`${import.meta.env.BASE_URL}onceHistorico.json`).then(res => res.json());
+      equipoData.value = data[hoy];
+      pizarra.value = armarEsquema(equipoData.value.esquema, equipoData.value.formacion);
+      nombresAdivinados.value = JSON.parse(localStorage.getItem('nombresAdivinados') || '{}');
+      mensaje.value = localStorage.getItem('mensajeFinal') || ''; // Retain "Perdiste" or "Ganaste" message
+      juegoFinalizado.value = localStorage.getItem('juegoFinalizado') === 'true';
+      return;
+    }
+
+    // Resetear datos si es un nuevo día
+    if (ultimaPartida !== hoy) {
+      localStorage.removeItem('nombresAdivinados');
+      localStorage.removeItem('juegoFinalizado');
+      localStorage.removeItem('mensajeFinal');
+      localStorage.removeItem('tiempoRestante');
+    }
+
     nombresAdivinados.value = JSON.parse(localStorage.getItem('nombresAdivinados') || '{}');
     juegoFinalizado.value = localStorage.getItem('juegoFinalizado') === 'true';
+    mensaje.value = localStorage.getItem('mensajeFinal') || '';
 
     const data = await fetch(`${import.meta.env.BASE_URL}onceHistorico.json`).then(res => res.json());
     if (!data || !data[hoy]) throw new Error('Datos no disponibles');
 
     equipoData.value = data[hoy];
-    pizarra.value = generarPizarra(equipoData.value.formacion);
+    pizarra.value = armarEsquema(equipoData.value.esquema, equipoData.value.formacion);
 
     nombresOriginales.value = [
       ...equipoData.value.formacion.map((j) => ({
@@ -129,14 +198,6 @@ onMounted(async () => {
     ];
 
     if (juegoFinalizado.value) {
-      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante();
-      mostrarCartel.value = true;
-      return;
-    }
-
-    if (ultimaPartida === hoy) {
-      mensaje.value = '🎮 Ya jugaste hoy\nVuelve a jugar en ' + calcularTiempoRestante();
-      mostrarCartel.value = true;
       return;
     }
 
@@ -148,19 +209,13 @@ onMounted(async () => {
       localStorage.setItem('tiempoRestante', tiempo.value.toString());
     }
 
+    localStorage.setItem('ultimaPartida', hoy);
     iniciarTemporizador();
   } catch (e) {
     console.error(e);
-    mostrarMensajeCartel('Error al cargar los datos.');
+    mensaje.value = 'Error al cargar los datos.';
   }
 });
-
-
-function mostrarMensajeCartel(texto) {
-  mensaje.value = texto;
-  mostrarCartel.value = true;
-  setTimeout(() => (mostrarCartel.value = false), 5000);
-}
 
 function verificarNombre() {
   if (juegoFinalizado.value) return;
@@ -183,7 +238,9 @@ function verificarNombre() {
       juegoFinalizado.value = true;
       localStorage.setItem('juegoFinalizado', 'true');
       clearInterval(intervalo);
-      mostrarMensajeCartel('¡Felicidades! Has completado el 11 inicial.');
+
+      mensaje.value = 'Correcto!';
+      localStorage.setItem('mensajeFinal', mensaje.value);
     }
   } else {
     mensajeError.value = 'Nombre incorrecto o ya ingresado.';
@@ -200,36 +257,25 @@ function iniciarTemporizador() {
     } else {
       clearInterval(intervalo);
       juegoFinalizado.value = true;
-      const hoy = new Date().toISOString().split('T')[0];
+
+      nombresOriginales.value.forEach(jugador => {
+        nombresAdivinados.value[jugador.posicion] = jugador.nombre;
+      });
       localStorage.setItem('nombresAdivinados', JSON.stringify(nombresAdivinados.value));
+
+      mensaje.value = `Perdiste! La plantilla era:`;
+      localStorage.setItem('mensajeFinal', mensaje.value);
+
+      const hoy = new Date().toISOString().split('T')[0];
       localStorage.setItem('ultimaPartida', hoy);
       localStorage.setItem('juegoFinalizado', 'true');
-      mostrarMensajeCartel('⏰ Se acabó el tiempo. Intenta mañana.');
     }
   }, 1000);
 }
 
-
-
-
 onUnmounted(() => {
   if (intervalo) clearInterval(intervalo);
 });
-
-function calcularTiempoRestante() {
-  return calcularTiempoHastaMedianocheArgentina();
-}
-
-function mostrarPista(posicion) {
-  let pista = '';
-  if (posicion === 'DT') {
-    pista = equipoData.value.dt.pista;
-  } else {
-    const jugador = equipoData.value.formacion.find(j => j.posicion === posicion);
-    pista = jugador?.pista || 'Sin pista disponible.';
-  }
-  mostrarMensajeCartel(pista);
-}
 
 function generarPiramide() {
   return pizarra.value
@@ -237,7 +283,6 @@ function generarPiramide() {
     .join('\n');
 }
 </script>
-
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap');
@@ -304,32 +349,35 @@ body {
 }
 
 .pizarra {
+  max-height: 400px;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.2rem; /* Reducido de 2rem a 1.2rem */
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
-  padding: 2rem;
+  padding: 1.5rem;
   box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
   align-items: center;
   justify-content: center;
+  max-width: 700px;
+  margin: 2rem auto 0 auto; /* bajamos el margen superior */
 }
 
 .linea {
   display: flex;
   justify-content: center;
-  gap: 1.2rem;
+  gap: 0.8rem; /* Reducido un poco el espacio entre jugadores */
   flex-wrap: wrap;
 }
 
 .jugador {
-  width: 90px;
-  height: 90px;
+  width: 65px; /* Reducido de 90px */
+  height: 65px;
   border-radius: 50%;
   background-color: #2c2c2c;
   color: rgb(255, 0, 0);
   font-weight: bold;
-  font-size: 0.75rem;
+  font-size: 1rem; /* Ajustado para el tamaño más chico */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -383,6 +431,29 @@ body {
   margin-top: -1rem;
   margin-bottom: 1rem;
 }
+
+.mensaje-derrota {
+  margin-top: 1rem;
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff0000;
+  padding: 0.5rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.mensaje-correcto {
+  margin-bottom: 1rem;
+  background-color: rgba(0, 184, 148, 0.1);
+  color: #00b894;
+  padding: 0.5rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
+
 .cancha {
   position: relative;
   width: 100%;
@@ -392,6 +463,7 @@ body {
   background-size: cover;
   margin: 0 auto;
 }
+
 .cartel-mensaje {
   background-color: rgba(0, 0, 0, 0.7);
   padding: 1.5rem;
@@ -416,5 +488,25 @@ body {
   }
 }
 
+.mensaje-global {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  z-index: 1000;
+  font-size: 1.2rem;
+}
+
+.mensaje-reintento {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #ffd700;
+  font-weight: bold;
+  text-align: center;
+}
 </style>
 ``` 
