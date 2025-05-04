@@ -1,141 +1,141 @@
 {
   "2025-05-01": [
     {
-      "opciones": ["Darío Gandín", "Martín Benítez", "Lucas Romero", "Alan Soñora", "Francisco Pizzini", "Franco Niell"],
+      "opciones": ["Adrián Calello", "Adrián Gabbarini", "Andrés Silvera", "Brian Nieva", "Carlos Báez", "Franco Niell"],
       "intruso": "Franco Niell"
     },
     {
-      "opciones": ["Sebastián Penco", "Hernán Fredes", "Federico González", "Leandro Fernández", "Matías Pisano", "Iván Bella"],
+      "opciones": ["Carlos Matheu", "Carlos Raúl Sciucatti", "Cristian Molina", "Darío Gandín", "David Abraham", "Iván Bella"],
       "intruso": "Iván Bella"
     },
     {
-      "opciones": ["Lucas Romero", "Francisco Pizzini", "Milton Álvarez", "Sebastián Sosa", "Alan Soñora", "Jonathan Bottinelli"],
+      "opciones": ["David Orellana", "Fabián Assmann", "Facundo Parra", "Federico González", "Fernando Lorefice", "Jonathan Bottinelli"],
       "intruso": "Jonathan Bottinelli"
     }
   ],
   "2025-05-02": [
     {
-      "opciones": ["Matías Pisano", "Federico González", "Francisco Pizzini", "Darío Gandín", "Martín Benítez", "Luciano Lollo"],
+      "opciones": ["Gastón Machín", "Germán Pacheco", "Guillermo Rodríguez", "Hernán Fredes", "Hernán Pérez", "Luciano Lollo"],
       "intruso": "Luciano Lollo"
     },
     {
-      "opciones": ["Hernán Fredes", "Lucas Romero", "Sebastián Penco", "Milton Álvarez", "Alan Soñora", "Gonzalo Castellani"],
+      "opciones": ["Ignacio Piatti", "Juan Eluchans", "Leandro Gioda", "Leandro Gracián", "Leandro Mussín", "Gonzalo Castellani"],
       "intruso": "Gonzalo Castellani"
     },
     {
-      "opciones": ["Francisco Pizzini", "Leandro Fernández", "Martín Benítez", "Federico González", "Darío Gandín", "Fernando Elizari"],
+      "opciones": ["Leonel Núñez", "Lorgio Álvarez", "Lucas Pusineri", "Mariano Berriex", "Mariano Herrón", "Fernando Elizari"],
       "intruso": "Fernando Elizari"
     }
   ],
   "2025-05-03": [
     {
-      "opciones": ["Alan Soñora", "Sebastián Sosa", "Milton Álvarez", "Lucas Romero", "Matías Pisano", "Cristian Espinoza"],
+      "opciones": ["Marcos Ramírez", "Martín Fabro", "Martín Gómez", "Matías Manrique", "Matías di Gregorio", "Cristian Espinoza"],
       "intruso": "Cristian Espinoza"
     },
     {
-      "opciones": ["Francisco Pizzini", "Darío Gandín", "Federico González", "Lucas Romero", "Sebastián Penco", "Diego Mendoza"],
+      "opciones": ["Nicolás Martínez", "Nicolás Mazzola", "Óscar Ustari", "Pato Rodríguez", "Sebastián Carrizo", "Diego Mendoza"],
       "intruso": "Diego Mendoza"
     },
     {
-      "opciones": ["Alan Soñora", "Martín Benítez", "Leandro Fernández", "Francisco Pizzini", "Matías Pisano", "Alexis Castro"],
+      "opciones": ["Sebastián Enrique Godoy", "Sergio Escudero", "Sergio Ortemán", "Vladimir Marín", "Adrián Calello", "Alexis Castro"],
       "intruso": "Alexis Castro"
     }
   ],
   "2025-05-04": [
     {
-      "opciones": ["Sebastián Sosa", "Hernán Fredes", "Lucas Romero", "Darío Gandín", "Milton Álvarez", "Cristian Llama"],
+      "opciones": ["Adrián Gabbarini", "Andrés Silvera", "Brian Nieva", "Carlos Báez", "Carlos Matheu", "Cristian Llama"],
       "intruso": "Cristian Llama"
     },
     {
-      "opciones": ["Francisco Pizzini", "Matías Pisano", "Alan Soñora", "Lucas Romero", "Sebastián Penco", "Mauro Matos"],
+      "opciones": ["Carlos Raúl Sciucatti", "Cristian Molina", "Darío Gandín", "David Abraham", "David Orellana", "Mauro Matos"],
       "intruso": "Mauro Matos"
     },
     {
-      "opciones": ["Francisco Pizzini", "Martín Benítez", "Hernán Fredes", "Darío Gandín", "Alan Soñora", "Lucas Melano"],
+      "opciones": ["Fabián Assmann", "Facundo Parra", "Federico González", "Fernando Lorefice", "Gastón Machín", "Lucas Melano"],
       "intruso": "Lucas Melano"
     }
   ],
   "2025-05-05": [
     {
-      "opciones": ["Sebastián Sosa", "Lucas Romero", "Federico González", "Milton Álvarez", "Matías Pisano", "Ismael Blanco"],
+      "opciones": ["Germán Pacheco", "Guillermo Rodríguez", "Hernán Fredes", "Hernán Pérez", "Ignacio Piatti", "Ismael Blanco"],
       "intruso": "Ismael Blanco"
     },
     {
-      "opciones": ["Francisco Pizzini", "Darío Gandín", "Alan Soñora", "Sebastián Penco", "Lucas Romero", "Facundo Pereyra"],
+      "opciones": ["Juan Eluchans", "Leandro Gioda", "Leandro Gracián", "Leandro Mussín", "Leonel Núñez", "Facundo Pereyra"],
       "intruso": "Facundo Pereyra"
     },
     {
-      "opciones": ["Federico González", "Martín Benítez", "Leandro Fernández", "Sebastián Sosa", "Matías Pisano", "Mauricio Sperduti"],
+      "opciones": ["Lorgio Álvarez", "Lucas Pusineri", "Mariano Berriex", "Mariano Herrón", "Marcos Ramírez", "Mauricio Sperduti"],
       "intruso": "Mauricio Sperduti"
     }
   ],
   "2025-05-06": [
     {
-      "opciones": ["Francisco Pizzini", "Lucas Romero", "Darío Gandín", "Milton Álvarez", "Alan Soñora", "Pablo Lugüercio"],
+      "opciones": ["Martín Fabro", "Martín Gómez", "Matías Manrique", "Matías di Gregorio", "Nicolás Martínez", "Pablo Lugüercio"],
       "intruso": "Pablo Lugüercio"
     },
     {
-      "opciones": ["Sebastián Penco", "Francisco Pizzini", "Matías Pisano", "Lucas Romero", "Hernán Fredes", "Matías García"],
+      "opciones": ["Nicolás Mazzola", "Óscar Ustari", "Pato Rodríguez", "Sebastián Carrizo", "Sebastián Enrique Godoy", "Matías García"],
       "intruso": "Matías García"
     },
     {
-      "opciones": ["Alan Soñora", "Lucas Romero", "Francisco Pizzini", "Sebastián Sosa", "Federico González", "Gastón Díaz"],
+      "opciones": ["Sergio Escudero", "Sergio Ortemán", "Vladimir Marín", "Adrián Calello", "Adrián Gabbarini", "Gastón Díaz"],
       "intruso": "Gastón Díaz"
     }
   ],
   "2025-05-07": [
     {
-      "opciones": ["Darío Gandín", "Matías Pisano", "Francisco Pizzini", "Milton Álvarez", "Martín Benítez", "Leandro Caruso"],
+      "opciones": ["Andrés Silvera", "Brian Nieva", "Carlos Báez", "Carlos Matheu", "Carlos Raúl Sciucatti", "Leandro Caruso"],
       "intruso": "Leandro Caruso"
     },
     {
-      "opciones": ["Sebastián Penco", "Lucas Romero", "Federico González", "Alan Soñora", "Francisco Pizzini", "Sebastián Riquelme"],
+      "opciones": ["Cristian Molina", "Darío Gandín", "David Abraham", "David Orellana", "Fabián Assmann", "Sebastián Riquelme"],
       "intruso": "Sebastián Riquelme"
     },
     {
-      "opciones": ["Hernán Fredes", "Francisco Pizzini", "Darío Gandín", "Sebastián Sosa", "Matías Pisano", "Lucas Mancinelli"],
+      "opciones": ["Facundo Parra", "Federico González", "Fernando Lorefice", "Gastón Machín", "Germán Pacheco", "Lucas Mancinelli"],
       "intruso": "Lucas Mancinelli"
     }
   ],
   "2025-05-08": [
     {
-      "opciones": ["Francisco Pizzini", "Lucas Romero", "Milton Álvarez", "Alan Soñora", "Sebastián Penco", "Gabriel Hauche"],
+      "opciones": ["Guillermo Rodríguez", "Hernán Fredes", "Hernán Pérez", "Ignacio Piatti", "Juan Eluchans", "Gabriel Hauche"],
       "intruso": "Gabriel Hauche"
     },
     {
-      "opciones": ["Francisco Pizzini", "Lucas Romero", "Federico González", "Darío Gandín", "Matías Pisano", "Fabián Bordagaray"],
+      "opciones": ["Leandro Gioda", "Leandro Gracián", "Leandro Mussín", "Leonel Núñez", "Lorgio Álvarez", "Fabián Bordagaray"],
       "intruso": "Fabián Bordagaray"
     },
     {
-      "opciones": ["Leandro Fernández", "Martín Benítez", "Sebastián Sosa", "Alan Soñora", "Francisco Pizzini", "Claudio Bieler"],
+      "opciones": ["Lucas Pusineri", "Mariano Berriex", "Mariano Herrón", "Marcos Ramírez", "Martín Fabro", "Claudio Bieler"],
       "intruso": "Claudio Bieler"
     }
   ],
   "2025-05-09": [
     {
-      "opciones": ["Matías Pisano", "Francisco Pizzini", "Lucas Romero", "Darío Gandín", "Milton Álvarez", "Ignacio Malcorra"],
+      "opciones": ["Martín Gómez", "Matías Manrique", "Matías di Gregorio", "Nicolás Martínez", "Nicolás Mazzola", "Ignacio Malcorra"],
       "intruso": "Ignacio Malcorra"
     },
     {
-      "opciones": ["Francisco Pizzini", "Federico González", "Sebastián Penco", "Alan Soñora", "Lucas Romero", "Guido Vadalá"],
+      "opciones": ["Óscar Ustari", "Pato Rodríguez", "Sebastián Carrizo", "Sebastián Enrique Godoy", "Sergio Escudero", "Guido Vadalá"],
       "intruso": "Guido Vadalá"
     },
     {
-      "opciones": ["Lucas Romero", "Francisco Pizzini", "Matías Pisano", "Milton Álvarez", "Sebastián Sosa", "Cristian Menéndez"],
+      "opciones": ["Sergio Ortemán", "Vladimir Marín", "Adrián Calello", "Adrián Gabbarini", "Andrés Silvera", "Cristian Menéndez"],
       "intruso": "Cristian Menéndez"
     }
   ],
   "2025-05-10": [
     {
-      "opciones": ["Francisco Pizzini", "Alan Soñora", "Darío Gandín", "Matías Pisano", "Lucas Romero", "Julián Fernández"],
+      "opciones": ["Brian Nieva", "Carlos Báez", "Carlos Matheu", "Carlos Raúl Sciucatti", "Cristian Molina", "Julián Fernández"],
       "intruso": "Julián Fernández"
     },
     {
-      "opciones": ["Sebastián Sosa", "Francisco Pizzini", "Leandro Fernández", "Federico González", "Matías Pisano", "Jonás Aguirre"],
+      "opciones": ["Darío Gandín", "David Abraham", "David Orellana", "Fabián Assmann", "Facundo Parra", "Jonás Aguirre"],
       "intruso": "Jonás Aguirre"
     },
     {
-      "opciones": ["Lucas Romero", "Alan Soñora", "Sebastián Penco", "Milton Álvarez", "Francisco Pizzini", "Cristian Chávez"],
+      "opciones": ["Federico González", "Fernando Lorefice", "Gastón Machín", "Germán Pacheco", "Guillermo Rodríguez", "Cristian Chávez"],
       "intruso": "Cristian Chávez"
     }
   ]
