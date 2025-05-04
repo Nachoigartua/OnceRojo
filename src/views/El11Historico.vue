@@ -389,7 +389,6 @@ body {
   max-width: 700px;
   height: auto;
   aspect-ratio: 2 / 3;
-  background-image: url("@/assets/cancha-verde2.png");
   background-size: cover;
   margin: 0 auto;
 }
