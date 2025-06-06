@@ -158,7 +158,11 @@ const cargarJugadorDelDia = async () => {
     const data = await response.json();
 
     const hoy = obtenerFechaArgentina();
-    const jugadorDelDia = data.jugadoresPorDia.find(j => j.fecha === hoy);
+    const fallback = '2025-05-04';
+    let jugadorDelDia = data.jugadoresPorDia.find(j => j.fecha === hoy);
+    if (!jugadorDelDia) {
+      jugadorDelDia = data.jugadoresPorDia.find(j => j.fecha === fallback);
+    }
     if (jugadorDelDia) {
       jugadorActual.value = jugadorDelDia;
       if (pistasMostradas.value.length === 0) {

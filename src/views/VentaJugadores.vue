@@ -176,6 +176,7 @@ function calcularTiempoRestante() {
 
 onMounted(async () => {
   const hoy = obtenerFechaArgentina();
+  const fallback = '2025-05-04';
   const jugado = localStorage.getItem('topVentasJugado') === hoy;
 
   if (jugado) {
@@ -192,15 +193,13 @@ onMounted(async () => {
     const data = await fetch(`${import.meta.env.BASE_URL}jugadores_ventas.json`).then((res) =>
       res.json()
     );
-    console.debug('🔍 JSON Data:', data); // Debugging JSON data
-
-   if (data[hoy]) {
-  jugadoresReferencia.value = data[hoy][0].jugadores;
-  jugadores.value = [...jugadoresReferencia.value];
-  jugadorActual.value = jugadores.value.shift(); // 👉 Esto faltaba
-  console.debug('🔍 Players for today:', jugadores.value);
-} else {
-      console.error('❌ No hay datos para la fecha actual:', hoy);
+    const key = data[hoy] ? hoy : fallback;
+    if (data[key]) {
+      jugadoresReferencia.value = data[key][0].jugadores;
+      jugadores.value = [...jugadoresReferencia.value];
+      jugadorActual.value = jugadores.value.shift();
+    } else {
+      console.error('❌ No hay datos para la fecha actual ni fallback:', hoy);
     }
   } catch (error) {
     console.error('❌ Error al cargar jugadores:', error);

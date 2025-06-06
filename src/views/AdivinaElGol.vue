@@ -98,15 +98,15 @@ const hoy = obtenerFechaArgentina(); // Asegurate de que esta función devuelva 
 onMounted(async () => {
   cargarEstado(); // Cargar el estado desde localStorage
   calcularTiempoRestante();
-
-const hoy = obtenerFechaArgentina(); // Asegurate de que esta función devuelva YYYY-MM-DD
-
+  const hoy = obtenerFechaArgentina();
+  const fallback = '2025-05-04';
   try {
     const data = await fetch(`${import.meta.env.BASE_URL}contenido_diario.json`).then((res) => res.json());
-    if (data[hoy]) {
-      videoSrc.value = `${import.meta.env.BASE_URL}videos/${data[hoy].video}`;
-      respuestas.value = data[hoy].respuestas;
-      correctaDelDia = data[hoy].correcta;
+    const key = data[hoy] ? hoy : fallback;
+    if (data[key]) {
+      videoSrc.value = `${import.meta.env.BASE_URL}videos/${data[key].video}`;
+      respuestas.value = data[key].respuestas;
+      correctaDelDia = data[key].correcta;
     } else {
       resultado.value = '📅 No hay contenido cargado para hoy.';
     }

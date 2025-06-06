@@ -153,17 +153,17 @@ const cargarPreguntaActual = () => {
 // Cargar el desafío del día desde el JSON
 const cargarDatosDelDia = async () => {
   const clave = obtenerFechaClave();
+  const fallback = '2025-05-04';
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}adivina-intruso.json`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
-    const entradaHoy = data[clave];
-
+    const entradaHoy = data[clave] || data[fallback];
     if (entradaHoy) {
       preguntas.value = entradaHoy;
       cargarPreguntaActual();
     } else {
-      console.warn('No hay desafío cargado para hoy.');
+      console.warn('No hay desafío cargado para hoy ni para el fallback.');
     }
   } catch (error) {
     console.error('Error cargando el JSON:', error);

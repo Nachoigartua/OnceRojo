@@ -155,6 +155,7 @@ function armarEsquema(esquema, formacion) {
 onMounted(async () => {
   try {
     const hoy = obtenerFechaArgentina();
+    const fallback = '2025-05-04';
     const ultimaPartida = localStorage.getItem('ultimaPartida');
 
     // Mostrar mensaje si ya se jugó hoy
@@ -179,14 +180,11 @@ onMounted(async () => {
       localStorage.removeItem('tiempoRestante');
     }
 
-    nombresAdivinados.value = JSON.parse(localStorage.getItem('nombresAdivinados') || '{}');
-    juegoFinalizado.value = localStorage.getItem('juegoFinalizado') === 'true';
-    mensaje.value = localStorage.getItem('mensajeFinal') || '';
-
     const data = await fetch(`${import.meta.env.BASE_URL}onceHistorico.json`).then(res => res.json());
-    if (!data || !data[hoy]) throw new Error('Datos no disponibles');
+    const key = data[hoy] ? hoy : fallback;
+    if (!data || !data[key]) throw new Error('Datos no disponibles');
 
-    equipoData.value = data[hoy];
+    equipoData.value = data[key];
     pizarra.value = armarEsquema(equipoData.value.esquema, equipoData.value.formacion);
 
     nombresOriginales.value = [
@@ -509,4 +507,3 @@ body {
   text-align: center;
 }
 </style>
-``` 

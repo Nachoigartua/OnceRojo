@@ -93,15 +93,16 @@ const guardarRespuesta = () => {
 };
 
 onMounted(async () => {
-  const hoy = new Date().toISOString().slice(0, 10).replace(/-/g, '_'); // Obtiene la fecha actual en formato YYYY_MM_DD
-  verificarRespuestaGuardada(); // Verifica si ya respondió
+  const hoy = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+  const fallback = '2025_05_04';
+  verificarRespuestaGuardada();
   try {
     const data = await fetch(`${import.meta.env.BASE_URL}camisetas_adivina.json`).then((res) => res.json());
-    if (data[hoy]) {
-      // Ajustar la ruta de la imagen
-      imagenSrc.value = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${data[hoy].imagen}`;
-      opciones.value = data[hoy].opciones;
-      correctaDelDia.value = data[hoy].correcta;
+    const key = data[hoy] ? hoy : fallback;
+    if (data[key]) {
+      imagenSrc.value = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${data[key].imagen}`;
+      opciones.value = data[key].opciones;
+      correctaDelDia.value = data[key].correcta;
     } else {
       resultado.value = '📅 No hay contenido cargado para hoy.';
     }

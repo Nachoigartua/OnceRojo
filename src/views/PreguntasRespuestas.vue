@@ -88,10 +88,11 @@ const cargarPreguntas = async () => {
     const data = await response.json();
 
     const clave = obtenerFechaArgentina();
-    const preguntasDeHoy = data[clave];
+    const fallback = '2025-05-04';
+    const preguntasDeHoy = data[clave] && Array.isArray(data[clave]) && data[clave].length >= 3 ? data[clave] : data[fallback];
 
     if (!Array.isArray(preguntasDeHoy) || preguntasDeHoy.length < 3) {
-      throw new Error('No hay suficientes preguntas válidas para hoy.');
+      throw new Error('No hay suficientes preguntas válidas para hoy ni para el fallback.');
     }
 
     todasLasPreguntas.value = preguntasDeHoy;
